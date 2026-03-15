@@ -1,0 +1,37 @@
+.session-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.session-list__item {
+  align-items: start;
+  border: 1px solid #dfe8ef;
+  border-radius: 18px;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr auto;
+  padding: 1rem;
+}
+
+.session-list__item h3 {
+  margin: 0 0 0.35rem;
+}
+
+.session-list__item p {
+  margin: 0.2rem 0 0;
+}
+
+.session-list__meta {
+  color: #5a7082;
+}
+
+.session-list__actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+@media (max-width: 720px) {
+  .session-list__item {
+    grid-template-columns: 1fr;
+  }
+}

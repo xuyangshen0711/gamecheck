@@ -1,0 +1,73 @@
+:root {
+  color: #17324d;
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  background:
+    radial-gradient(circle at top left, rgba(153, 205, 188, 0.28), transparent 28%),
+    linear-gradient(180deg, #eff6f4, #f7fafc 50%, #edf3f8);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  background: #17324d;
+  border: none;
+  border-radius: 999px;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0.8rem 1.1rem;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+input,
+select,
+textarea {
+  background: #ffffff;
+  border: 1px solid #c9d7e2;
+  border-radius: 12px;
+  margin-top: 0.4rem;
+  padding: 0.85rem 0.95rem;
+}
+
+label {
+  color: #29485f;
+  display: grid;
+  font-weight: 600;
+  gap: 0.2rem;
+}
+
+textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.button-secondary {
+  background: #8ba5b7;
+}
+
+.button-danger {
+  background: #b74b38;
+}
+
+.list-state {
+  color: #5a7082;
+  margin: 0;
+}

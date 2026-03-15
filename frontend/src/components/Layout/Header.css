@@ -1,0 +1,35 @@
+.header {
+  align-items: end;
+  background: linear-gradient(135deg, #17324d, #295f78);
+  border-radius: 24px;
+  color: #f8fbff;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1.4fr 1fr;
+  padding: 2rem;
+}
+
+.header h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  margin: 0.2rem 0 0;
+}
+
+.header__eyebrow {
+  letter-spacing: 0.16em;
+  margin: 0;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+.header__summary {
+  align-self: center;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .header {
+    grid-template-columns: 1fr;
+  }
+}

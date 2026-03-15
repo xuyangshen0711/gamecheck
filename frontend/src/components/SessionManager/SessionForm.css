@@ -1,0 +1,5 @@
+.form-card textarea,
+.form-card input,
+.form-card select {
+  width: 100%;
+}

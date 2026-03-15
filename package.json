@@ -1,0 +1,9 @@
+{
+  "name": "gamecheck",
+  "private": true,
+  "scripts": {
+    "render-build": "npm --prefix frontend install && npm --prefix frontend run build && npm --prefix backend install",
+    "render-start": "npm --prefix backend start",
+    "render-seed": "npm --prefix backend run seed"
+  }
+}

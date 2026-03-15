@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: gamecheck
+    runtime: node
+    plan: free
+    region: ohio
+    buildCommand: npm run render-build
+    startCommand: npm run render-start
+    healthCheckPath: /api/health
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: gamecheck

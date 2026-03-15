@@ -7,7 +7,7 @@ const app = createApp();
 async function startServer() {
   await connectToDatabase();
 
-  app.listen(env.port, () => {
+  app.listen(env.port, '0.0.0.0', () => {
     console.log(`GameCheck backend listening on http://localhost:${env.port}`);
   });
 }

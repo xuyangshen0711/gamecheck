@@ -11,6 +11,7 @@ function App() {
   const [sessions, setSessions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const isEmptyDeployment = !loading && !errorMessage && games.length === 0 && sessions.length === 0;
 
   async function loadData(filters = {}) {
     setLoading(true);
@@ -38,6 +39,16 @@ function App() {
     <div className="app-shell">
       <Header />
       {errorMessage ? <p className="app-shell__error">{errorMessage}</p> : null}
+      {isEmptyDeployment ? (
+        <section className="app-shell__notice">
+          <h2>Deployment is working</h2>
+          <p>
+            The app is live, but this cloud database does not have sample data yet. Add games and
+            sessions manually, or seed Atlas from your local machine with
+            <code> MONGO_URI=&quot;your-atlas-uri&quot; npm run render-seed</code>.
+          </p>
+        </section>
+      ) : null}
       <Dashboard games={games} sessions={sessions} loading={loading} />
       <main className="app-shell__content">
         <GameLibrary

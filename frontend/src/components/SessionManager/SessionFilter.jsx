@@ -1,68 +1,75 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './SessionFilter.css';
 
 function SessionFilter({ games, filters, onChange }) {
   const [draftFilters, setDraftFilters] = useState(filters);
-  const debounceTimeoutRef = useRef(null);
 
   useEffect(() => {
     setDraftFilters(filters);
   }, [filters]);
 
-  useEffect(() => {
-    return () => {
-      clearTimeout(debounceTimeoutRef.current);
-    };
-  }, []);
-
   function handleGameChange(event) {
-    const nextFilters = {
+    setDraftFilters((currentFilters) => ({
+      ...currentFilters,
       gameId: event.target.value,
-      player: draftFilters.player,
-    };
-
-    clearTimeout(debounceTimeoutRef.current);
-    setDraftFilters(nextFilters);
-    onChange(nextFilters);
+    }));
   }
 
   function handlePlayerChange(event) {
-    const nextFilters = {
-      ...draftFilters,
+    setDraftFilters((currentFilters) => ({
+      ...currentFilters,
       player: event.target.value,
+    }));
+  }
+
+  function handleApplyFilters() {
+    onChange(draftFilters);
+  }
+
+  function handleClearFilters() {
+    const clearedFilters = {
+      gameId: '',
+      player: '',
     };
 
-    clearTimeout(debounceTimeoutRef.current);
-    setDraftFilters(nextFilters);
-    debounceTimeoutRef.current = setTimeout(() => {
-      onChange(nextFilters);
-    }, 300);
+    setDraftFilters(clearedFilters);
+    onChange(clearedFilters);
   }
 
   return (
-    <div className="filter-row">
-      <label>
-        <span>Filter by game</span>
-        <select value={draftFilters.gameId} onChange={handleGameChange}>
-          <option value="">All games</option>
-          {games.map((game) => (
-            <option key={game.id} value={game.id}>
-              {game.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        <span>Filter by player</span>
-        <input
-          type="search"
-          value={draftFilters.player}
-          onChange={handlePlayerChange}
-          placeholder="Enter player name"
-        />
-      </label>
-    </div>
+    <>
+      <div className="filter-row">
+        <label>
+          <span>Filter by game</span>
+          <select value={draftFilters.gameId} onChange={handleGameChange}>
+            <option value="">All games</option>
+            {games.map((game) => (
+              <option key={game.id} value={game.id}>
+                {game.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>Filter by player</span>
+          <input
+            type="search"
+            value={draftFilters.player}
+            onChange={handlePlayerChange}
+            placeholder="Enter player name"
+          />
+        </label>
+      </div>
+      <div className="filter-actions">
+        <button type="button" onClick={handleApplyFilters}>
+          Apply Filters
+        </button>
+        <button type="button" className="button-secondary" onClick={handleClearFilters}>
+          Clear
+        </button>
+      </div>
+    </>
   );
 }
 

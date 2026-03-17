@@ -2,8 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import './SessionForm.css';
 
-function SessionForm({ games, initialValues, onSubmit, onCancel, isEditing, submitting }) {
+function SessionForm({
+  games,
+  initialValues,
+  playerSuggestions,
+  onSubmit,
+  onCancel,
+  isEditing,
+  submitting,
+}) {
   const [formValues, setFormValues] = useState(initialValues);
+  const [isPlayersFocused, setIsPlayersFocused] = useState(false);
 
   useEffect(() => {
     setFormValues(initialValues);
@@ -16,12 +25,51 @@ function SessionForm({ games, initialValues, onSubmit, onCancel, isEditing, subm
       .filter(Boolean);
   }, [formValues.playersText]);
 
+  const playerAutocompleteSuggestions = useMemo(() => {
+    const playerSegments = formValues.playersText.split(',');
+    const rawCurrentSegment = playerSegments[playerSegments.length - 1] || '';
+    const normalizedCurrentSegment = rawCurrentSegment.trim().toLowerCase();
+    const selectedPlayers = new Set(
+      playerSegments
+        .slice(0, -1)
+        .map((player) => player.trim().toLowerCase())
+        .filter(Boolean)
+    );
+
+    return playerSuggestions.filter((player) => {
+      const normalizedPlayer = player.toLowerCase();
+
+      if (selectedPlayers.has(normalizedPlayer)) {
+        return false;
+      }
+
+      if (!normalizedCurrentSegment) {
+        return true;
+      }
+
+      return normalizedPlayer.includes(normalizedCurrentSegment);
+    });
+  }, [formValues.playersText, playerSuggestions]);
+
   function handleChange(event) {
     const { name, value } = event.target;
     setFormValues((currentValues) => ({
       ...currentValues,
       [name]: value,
     }));
+  }
+
+  function handlePlayerSuggestionClick(player) {
+    setFormValues((currentValues) => {
+      const playerSegments = currentValues.playersText.split(',');
+      playerSegments[playerSegments.length - 1] = ` ${player}`;
+      const nextPlayersText = playerSegments.join(',').replace(/^ /, '');
+
+      return {
+        ...currentValues,
+        playersText: `${nextPlayersText}, `,
+      };
+    });
   }
 
   function handleSubmit(event) {
@@ -60,9 +108,26 @@ function SessionForm({ games, initialValues, onSubmit, onCancel, isEditing, subm
           name="playersText"
           value={formValues.playersText}
           onChange={handleChange}
+          onFocus={() => setIsPlayersFocused(true)}
+          onBlur={() => setTimeout(() => setIsPlayersFocused(false), 100)}
           placeholder="Comma-separated player names"
           required
         />
+        {isPlayersFocused && playerAutocompleteSuggestions.length > 0 ? (
+          <div className="player-autocomplete">
+            {playerAutocompleteSuggestions.slice(0, 6).map((player) => (
+              <button
+                key={player}
+                type="button"
+                className="player-autocomplete__option"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => handlePlayerSuggestionClick(player)}
+              >
+                {player}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </label>
       <label>
         <span>Winner</span>
@@ -112,6 +177,7 @@ SessionForm.propTypes = {
     winner: PropTypes.string.isRequired,
     notes: PropTypes.string.isRequired,
   }).isRequired,
+  playerSuggestions: PropTypes.arrayOf(PropTypes.string).isRequired,
   onSubmit: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   isEditing: PropTypes.bool.isRequired,

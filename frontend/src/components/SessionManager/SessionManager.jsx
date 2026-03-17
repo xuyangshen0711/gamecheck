@@ -6,25 +6,35 @@ import SessionForm from './SessionForm.jsx';
 import SessionList from './SessionList.jsx';
 import './SessionManager.css';
 
-const emptySession = {
-  gameId: '',
-  sessionDate: '',
-  playersText: '',
-  winner: '',
-  notes: '',
-};
+function getTodayDate() {
+  return new Date().toISOString().slice(0, 10);
+}
 
-function SessionManager({ games, sessions, loading, onDataChange, setErrorMessage }) {
+function createEmptySession() {
+  return {
+    gameId: '',
+    sessionDate: getTodayDate(),
+    playersText: '',
+    winner: '',
+    notes: '',
+  };
+}
+
+function SessionManager({
+  games,
+  sessions,
+  filters,
+  playerSuggestions,
+  loading,
+  onDataChange,
+  setErrorMessage,
+}) {
   const [editingSession, setEditingSession] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [filters, setFilters] = useState({
-    gameId: '',
-    player: '',
-  });
 
   const sessionFormValues = useMemo(() => {
     if (!editingSession) {
-      return emptySession;
+      return createEmptySession();
     }
 
     return {
@@ -75,7 +85,6 @@ function SessionManager({ games, sessions, loading, onDataChange, setErrorMessag
   }
 
   async function handleFilterChange(nextFilters) {
-    setFilters(nextFilters);
     await onDataChange(nextFilters);
   }
 
@@ -91,6 +100,7 @@ function SessionManager({ games, sessions, loading, onDataChange, setErrorMessag
       <SessionForm
         games={games}
         initialValues={sessionFormValues}
+        playerSuggestions={playerSuggestions}
         onSubmit={handleSubmit}
         onCancel={() => setEditingSession(null)}
         isEditing={Boolean(editingSession)}
@@ -109,6 +119,11 @@ function SessionManager({ games, sessions, loading, onDataChange, setErrorMessag
 SessionManager.propTypes = {
   games: PropTypes.arrayOf(PropTypes.object).isRequired,
   sessions: PropTypes.arrayOf(PropTypes.object).isRequired,
+  filters: PropTypes.shape({
+    gameId: PropTypes.string.isRequired,
+    player: PropTypes.string.isRequired,
+  }).isRequired,
+  playerSuggestions: PropTypes.arrayOf(PropTypes.string).isRequired,
   loading: PropTypes.bool.isRequired,
   onDataChange: PropTypes.func.isRequired,
   setErrorMessage: PropTypes.func.isRequired,

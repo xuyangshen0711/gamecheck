@@ -14,10 +14,14 @@ async function request(path, options = {}) {
     return null;
   }
 
-  const data = await response.json();
+  const contentType = response.headers.get('content-type') || '';
+  const isJsonResponse = contentType.includes('application/json');
+  const data = isJsonResponse ? await response.json() : await response.text();
 
   if (!response.ok) {
-    const message = data.error || data.errors?.join(' ') || 'Request failed.';
+    const message = isJsonResponse
+      ? data.error || data.errors?.join(' ') || `Request failed with status ${response.status}.`
+      : data.trim() || `Request failed with status ${response.status}.`;
     throw new Error(message);
   }
 
@@ -25,9 +29,9 @@ async function request(path, options = {}) {
 }
 
 export const api = {
-  listGames(search = '') {
+  listGames(search = '', options = {}) {
     const query = search ? `?search=${encodeURIComponent(search)}` : '';
-    return request(`/games${query}`);
+    return request(`/games${query}`, options);
   },
   createGame(payload) {
     return request('/games', {
@@ -46,7 +50,7 @@ export const api = {
       method: 'DELETE',
     });
   },
-  listSessions(filters = {}) {
+  listSessions(filters = {}, options = {}) {
     const params = new URLSearchParams();
 
     if (filters.gameId) {
@@ -58,7 +62,7 @@ export const api = {
     }
 
     const query = params.toString() ? `?${params.toString()}` : '';
-    return request(`/sessions${query}`);
+    return request(`/sessions${query}`, options);
   },
   createSession(payload) {
     return request('/sessions', {

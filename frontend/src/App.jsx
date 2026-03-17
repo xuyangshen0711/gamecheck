@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api.js';
 import Dashboard from './components/Dashboard/Dashboard.jsx';
 import Header from './components/Layout/Header.jsx';
@@ -6,33 +6,89 @@ import GameLibrary from './components/GameLibrary/GameLibrary.jsx';
 import SessionManager from './components/SessionManager/SessionManager.jsx';
 import './styles/App.css';
 
+function hasActiveSessionFilters(filters) {
+  return Boolean(filters.gameId || filters.player.trim());
+}
+
 function App() {
   const [games, setGames] = useState([]);
+  const [allSessions, setAllSessions] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [sessionFilters, setSessionFilters] = useState({
+    gameId: '',
+    player: '',
+  });
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const isEmptyDeployment = !loading && !errorMessage && games.length === 0 && sessions.length === 0;
+  const activeRequestControllerRef = useRef(null);
+  const isEmptyDeployment =
+    !loading && !errorMessage && games.length === 0 && allSessions.length === 0;
+  const playerSuggestions = useMemo(() => {
+    const playerCounts = new Map();
+
+    allSessions.forEach((session) => {
+      session.players.forEach((player) => {
+        playerCounts.set(player, (playerCounts.get(player) || 0) + 1);
+      });
+    });
+
+    return [...playerCounts.entries()]
+      .sort((left, right) => {
+        if (right[1] !== left[1]) {
+          return right[1] - left[1];
+        }
+
+        return left[0].localeCompare(right[0]);
+      })
+      .map(([player]) => player);
+  }, [allSessions]);
 
   async function loadData(filters = {}) {
+    activeRequestControllerRef.current?.abort();
+    const controller = new AbortController();
+    activeRequestControllerRef.current = controller;
     setLoading(true);
+    const normalizedFilters = {
+      gameId: filters.gameId || '',
+      player: filters.player || '',
+    };
 
     try {
-      const [gameData, sessionData] = await Promise.all([
-        api.listGames(),
-        api.listSessions(filters),
-      ]);
+      const requests = [
+        api.listGames('', { signal: controller.signal }),
+        api.listSessions({}, { signal: controller.signal }),
+      ];
+
+      if (hasActiveSessionFilters(normalizedFilters)) {
+        requests.push(api.listSessions(normalizedFilters, { signal: controller.signal }));
+      }
+
+      const [gameData, allSessionData, filteredSessionData] = await Promise.all(requests);
       setGames(gameData);
-      setSessions(sessionData);
+      setAllSessions(allSessionData);
+      setSessions(filteredSessionData || allSessionData);
+      setSessionFilters(normalizedFilters);
       setErrorMessage('');
     } catch (error) {
+      if (error.name === 'AbortError') {
+        return;
+      }
+
       setErrorMessage(error.message);
     } finally {
-      setLoading(false);
+      if (activeRequestControllerRef.current === controller) {
+        activeRequestControllerRef.current = null;
+        setLoading(false);
+      }
     }
   }
 
   useEffect(() => {
     loadData();
+
+    return () => {
+      activeRequestControllerRef.current?.abort();
+    };
   }, []);
 
   return (
@@ -49,17 +105,19 @@ function App() {
           </p>
         </section>
       ) : null}
-      <Dashboard games={games} sessions={sessions} loading={loading} />
+      <Dashboard games={games} sessions={allSessions} loading={loading} />
       <main className="app-shell__content">
         <GameLibrary
           games={games}
           loading={loading}
-          onDataChange={() => loadData()}
+          onDataChange={() => loadData(sessionFilters)}
           setErrorMessage={setErrorMessage}
         />
         <SessionManager
           games={games}
           sessions={sessions}
+          filters={sessionFilters}
+          playerSuggestions={playerSuggestions}
           loading={loading}
           onDataChange={(filters) => loadData(filters)}
           setErrorMessage={setErrorMessage}

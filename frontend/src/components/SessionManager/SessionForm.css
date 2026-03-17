@@ -3,3 +3,19 @@
 .form-card select {
   width: 100%;
 }
+
+.player-autocomplete {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.player-autocomplete__option {
+  background: #eef5fb;
+  border: 1px solid #c8d8e6;
+  border-radius: 999px;
+  color: #17324d;
+  cursor: pointer;
+  padding: 0.35rem 0.75rem;
+}

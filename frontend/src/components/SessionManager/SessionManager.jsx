@@ -26,6 +26,7 @@ function SessionManager({
   filters,
   playerSuggestions,
   loading,
+  refreshing,
   onDataChange,
   setErrorMessage,
 }) {
@@ -95,6 +96,7 @@ function SessionManager({
           <p className="panel__eyebrow">Xuyang Shen</p>
           <h2>Session Logging</h2>
         </div>
+        {refreshing ? <p className="panel__status">Updating results...</p> : null}
       </div>
       <SessionFilter games={games} filters={filters} onChange={handleFilterChange} />
       <SessionForm
@@ -125,6 +127,7 @@ SessionManager.propTypes = {
   }).isRequired,
   playerSuggestions: PropTypes.arrayOf(PropTypes.string).isRequired,
   loading: PropTypes.bool.isRequired,
+  refreshing: PropTypes.bool.isRequired,
   onDataChange: PropTypes.func.isRequired,
   setErrorMessage: PropTypes.func.isRequired,
 };

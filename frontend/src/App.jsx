@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api.js';
 import Dashboard from './components/Dashboard/Dashboard.jsx';
 import Header from './components/Layout/Header.jsx';
@@ -19,10 +19,11 @@ function App() {
     player: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const activeRequestControllerRef = useRef(null);
   const isEmptyDeployment =
-    !loading && !errorMessage && games.length === 0 && allSessions.length === 0;
+    !initialLoading && !errorMessage && games.length === 0 && allSessions.length === 0;
   const playerSuggestions = useMemo(() => {
     const playerCounts = new Map();
 
@@ -43,11 +44,18 @@ function App() {
       .map(([player]) => player);
   }, [allSessions]);
 
-  async function loadData(filters = {}) {
+  const loadData = useCallback(async (filters = {}) => {
     activeRequestControllerRef.current?.abort();
     const controller = new AbortController();
     activeRequestControllerRef.current = controller;
-    setLoading(true);
+    const isFirstLoad = initialLoading && games.length === 0 && allSessions.length === 0;
+
+    if (isFirstLoad) {
+      setInitialLoading(true);
+    } else {
+      setRefreshing(true);
+    }
+
     const normalizedFilters = {
       gameId: filters.gameId || '',
       player: filters.player || '',
@@ -78,10 +86,11 @@ function App() {
     } finally {
       if (activeRequestControllerRef.current === controller) {
         activeRequestControllerRef.current = null;
-        setLoading(false);
+        setInitialLoading(false);
+        setRefreshing(false);
       }
     }
-  }
+  }, [allSessions.length, games.length, initialLoading]);
 
   useEffect(() => {
     loadData();
@@ -89,7 +98,7 @@ function App() {
     return () => {
       activeRequestControllerRef.current?.abort();
     };
-  }, []);
+  }, [loadData]);
 
   return (
     <div className="app-shell">
@@ -105,11 +114,11 @@ function App() {
           </p>
         </section>
       ) : null}
-      <Dashboard games={games} sessions={allSessions} loading={loading} />
+      <Dashboard games={games} sessions={allSessions} loading={initialLoading} />
       <main className="app-shell__content">
         <GameLibrary
           games={games}
-          loading={loading}
+          loading={initialLoading}
           onDataChange={() => loadData(sessionFilters)}
           setErrorMessage={setErrorMessage}
         />
@@ -118,7 +127,8 @@ function App() {
           sessions={sessions}
           filters={sessionFilters}
           playerSuggestions={playerSuggestions}
-          loading={loading}
+          loading={initialLoading}
+          refreshing={refreshing}
           onDataChange={(filters) => loadData(filters)}
           setErrorMessage={setErrorMessage}
         />

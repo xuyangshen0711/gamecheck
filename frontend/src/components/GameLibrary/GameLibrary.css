@@ -19,6 +19,12 @@
   margin: 0.25rem 0 0;
 }
 
+.panel__controls {
+  align-items: end;
+  display: flex;
+  gap: 0.75rem;
+}
+
 .panel__eyebrow {
   color: #5a7082;
   font-size: 0.9rem;
@@ -34,8 +40,17 @@
   width: 100%;
 }
 
+.panel__jump {
+  white-space: nowrap;
+}
+
 @media (max-width: 720px) {
   .panel__heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .panel__controls {
     align-items: stretch;
     flex-direction: column;
   }

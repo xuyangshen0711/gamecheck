@@ -21,6 +21,7 @@ function createEmptySession() {
 }
 
 function SessionManager({
+  sectionRef,
   games,
   sessions,
   filters,
@@ -90,7 +91,7 @@ function SessionManager({
   }
 
   return (
-    <section className="panel">
+    <section className="panel" ref={sectionRef}>
       <div className="panel__heading">
         <div>
           <p className="panel__eyebrow">Xuyang Shen</p>
@@ -119,6 +120,7 @@ function SessionManager({
 }
 
 SessionManager.propTypes = {
+  sectionRef: PropTypes.shape({ current: PropTypes.any }),
   games: PropTypes.arrayOf(PropTypes.object).isRequired,
   sessions: PropTypes.arrayOf(PropTypes.object).isRequired,
   filters: PropTypes.shape({
@@ -130,6 +132,10 @@ SessionManager.propTypes = {
   refreshing: PropTypes.bool.isRequired,
   onDataChange: PropTypes.func.isRequired,
   setErrorMessage: PropTypes.func.isRequired,
+};
+
+SessionManager.defaultProps = {
+  sectionRef: null,
 };
 
 export default SessionManager;

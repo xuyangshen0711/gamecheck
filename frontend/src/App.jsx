@@ -22,6 +22,7 @@ function App() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const activeRequestControllerRef = useRef(null);
+  const sessionManagerRef = useRef(null);
   const isEmptyDeployment =
     !initialLoading && !errorMessage && games.length === 0 && allSessions.length === 0;
   const playerSuggestions = useMemo(() => {
@@ -120,9 +121,13 @@ function App() {
           games={games}
           loading={initialLoading}
           onDataChange={() => loadData(sessionFilters)}
+          onJumpToSessionLogging={() =>
+            sessionManagerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
           setErrorMessage={setErrorMessage}
         />
         <SessionManager
+          sectionRef={sessionManagerRef}
           games={games}
           sessions={sessions}
           filters={sessionFilters}

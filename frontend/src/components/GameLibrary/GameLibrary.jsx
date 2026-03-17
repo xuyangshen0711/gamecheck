@@ -13,7 +13,7 @@ const emptyGame = {
   description: '',
 };
 
-function GameLibrary({ games, loading, onDataChange, setErrorMessage }) {
+function GameLibrary({ games, loading, onDataChange, onJumpToSessionLogging, setErrorMessage }) {
   const [searchValue, setSearchValue] = useState('');
   const [editingGame, setEditingGame] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -68,15 +68,20 @@ function GameLibrary({ games, loading, onDataChange, setErrorMessage }) {
           <p className="panel__eyebrow">Xuyang Shen</p>
           <h2>Game Library</h2>
         </div>
-        <label className="panel__search">
-          <span>Search games</span>
-          <input
-            type="search"
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
-            placeholder="Search by name or category"
-          />
-        </label>
+        <div className="panel__controls">
+          <label className="panel__search">
+            <span>Search games</span>
+            <input
+              type="search"
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+              placeholder="Search by name or category"
+            />
+          </label>
+          <button type="button" className="button-secondary panel__jump" onClick={onJumpToSessionLogging}>
+            Back to Session Logging
+          </button>
+        </div>
       </div>
       <GameForm
         initialValues={editingGame || emptyGame}
@@ -99,6 +104,7 @@ GameLibrary.propTypes = {
   games: PropTypes.arrayOf(PropTypes.object).isRequired,
   loading: PropTypes.bool.isRequired,
   onDataChange: PropTypes.func.isRequired,
+  onJumpToSessionLogging: PropTypes.func.isRequired,
   setErrorMessage: PropTypes.func.isRequired,
 };
 

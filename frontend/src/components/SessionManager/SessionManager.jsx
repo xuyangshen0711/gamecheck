@@ -21,13 +21,14 @@ function createEmptySession() {
 }
 
 function SessionManager({
-  sectionRef,
   games,
   sessions,
   filters,
   playerSuggestions,
   loading,
   refreshing,
+  fullWidth,
+  onShowAllPanels,
   onDataChange,
   setErrorMessage,
 }) {
@@ -91,13 +92,20 @@ function SessionManager({
   }
 
   return (
-    <section className="panel" ref={sectionRef}>
+    <section className={`panel ${fullWidth ? 'panel--full-width' : ''}`}>
       <div className="panel__heading">
         <div>
           <p className="panel__eyebrow">Xuyang Shen</p>
           <h2>Session Logging</h2>
         </div>
-        {refreshing ? <p className="panel__status">Updating results...</p> : null}
+        <div className="panel__heading-actions">
+          {refreshing ? <p className="panel__status">Updating results...</p> : null}
+          {fullWidth ? (
+            <button type="button" className="button-secondary" onClick={onShowAllPanels}>
+              Back to All Panels
+            </button>
+          ) : null}
+        </div>
       </div>
       <SessionFilter games={games} filters={filters} onChange={handleFilterChange} />
       <SessionForm
@@ -120,7 +128,6 @@ function SessionManager({
 }
 
 SessionManager.propTypes = {
-  sectionRef: PropTypes.shape({ current: PropTypes.any }),
   games: PropTypes.arrayOf(PropTypes.object).isRequired,
   sessions: PropTypes.arrayOf(PropTypes.object).isRequired,
   filters: PropTypes.shape({
@@ -130,12 +137,10 @@ SessionManager.propTypes = {
   playerSuggestions: PropTypes.arrayOf(PropTypes.string).isRequired,
   loading: PropTypes.bool.isRequired,
   refreshing: PropTypes.bool.isRequired,
+  fullWidth: PropTypes.bool.isRequired,
+  onShowAllPanels: PropTypes.func.isRequired,
   onDataChange: PropTypes.func.isRequired,
   setErrorMessage: PropTypes.func.isRequired,
-};
-
-SessionManager.defaultProps = {
-  sectionRef: null,
 };
 
 export default SessionManager;

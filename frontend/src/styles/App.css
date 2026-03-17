@@ -12,6 +12,10 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.app-shell__content--single {
+  grid-template-columns: 1fr;
+}
+
 .app-shell__error {
   background: #fff4f1;
   border: 1px solid #f5b4a5;

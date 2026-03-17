@@ -14,6 +14,7 @@ function App() {
   const [games, setGames] = useState([]);
   const [allSessions, setAllSessions] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [activePanel, setActivePanel] = useState('both');
   const [sessionFilters, setSessionFilters] = useState({
     gameId: '',
     player: '',
@@ -22,7 +23,6 @@ function App() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const activeRequestControllerRef = useRef(null);
-  const sessionManagerRef = useRef(null);
   const isEmptyDeployment =
     !initialLoading && !errorMessage && games.length === 0 && allSessions.length === 0;
   const playerSuggestions = useMemo(() => {
@@ -116,24 +116,29 @@ function App() {
         </section>
       ) : null}
       <Dashboard games={games} sessions={allSessions} loading={initialLoading} />
-      <main className="app-shell__content">
-        <GameLibrary
-          games={games}
-          loading={initialLoading}
-          onDataChange={() => loadData(sessionFilters)}
-          onJumpToSessionLogging={() =>
-            sessionManagerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          }
-          setErrorMessage={setErrorMessage}
-        />
+      <main
+        className={`app-shell__content ${
+          activePanel === 'sessions' ? 'app-shell__content--single' : ''
+        }`}
+      >
+        {activePanel !== 'sessions' ? (
+          <GameLibrary
+            games={games}
+            loading={initialLoading}
+            onDataChange={() => loadData(sessionFilters)}
+            onOpenSessionLogging={() => setActivePanel('sessions')}
+            setErrorMessage={setErrorMessage}
+          />
+        ) : null}
         <SessionManager
-          sectionRef={sessionManagerRef}
           games={games}
           sessions={sessions}
           filters={sessionFilters}
           playerSuggestions={playerSuggestions}
           loading={initialLoading}
           refreshing={refreshing}
+          fullWidth={activePanel === 'sessions'}
+          onShowAllPanels={() => setActivePanel('both')}
           onDataChange={(filters) => loadData(filters)}
           setErrorMessage={setErrorMessage}
         />

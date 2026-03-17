@@ -13,7 +13,7 @@ const emptyGame = {
   description: '',
 };
 
-function GameLibrary({ games, loading, onDataChange, onJumpToSessionLogging, setErrorMessage }) {
+function GameLibrary({ games, loading, onDataChange, onOpenSessionLogging, setErrorMessage }) {
   const [searchValue, setSearchValue] = useState('');
   const [editingGame, setEditingGame] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -78,8 +78,12 @@ function GameLibrary({ games, loading, onDataChange, onJumpToSessionLogging, set
               placeholder="Search by name or category"
             />
           </label>
-          <button type="button" className="button-secondary panel__jump" onClick={onJumpToSessionLogging}>
-            Back to Session Logging
+          <button
+            type="button"
+            className="button-secondary panel__jump"
+            onClick={onOpenSessionLogging}
+          >
+            Open Session Logging
           </button>
         </div>
       </div>
@@ -104,7 +108,7 @@ GameLibrary.propTypes = {
   games: PropTypes.arrayOf(PropTypes.object).isRequired,
   loading: PropTypes.bool.isRequired,
   onDataChange: PropTypes.func.isRequired,
-  onJumpToSessionLogging: PropTypes.func.isRequired,
+  onOpenSessionLogging: PropTypes.func.isRequired,
   setErrorMessage: PropTypes.func.isRequired,
 };
 

@@ -62,6 +62,32 @@ MONGO_URI="your-atlas-connection-string" npm run render-seed
 
 7. Open the Render service URL and verify that the dashboard, game library, and session logging features work.
 
+## Screenshots
+
+### Authentication
+
+Passport-based sign-in and registration protect the workspace before any game or session data is shown.
+
+![GameCheck authentication screenshot](docs/screenshots/auth-sign-in.png)
+
+### Workspace Overview
+
+The main workspace combines the dashboard, game library, and session logging tools in a single view.
+
+![GameCheck workspace overview screenshot](docs/screenshots/workspace-overview.png)
+
+### CRUD Workflow
+
+Users can create, edit, delete, search, and filter games and sessions directly from the workspace.
+
+![GameCheck CRUD workflow screenshot](docs/screenshots/workspace-crud.png)
+
+### Statistics View
+
+The statistics page summarizes win rates, streaks, rivalries, and most-played games from the seeded MongoDB data.
+
+![GameCheck statistics screenshot](docs/screenshots/statistics-page.png)
+
 ## Feature Scope
 
 - Create, edit, delete, search, and browse games in the library.

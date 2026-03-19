@@ -9,7 +9,7 @@
 }
 
 .panel__heading {
-  align-items: end;
+  align-items: start;
   display: flex;
   gap: 1rem;
   justify-content: space-between;
@@ -27,9 +27,11 @@
 
 .panel__eyebrow {
   color: #5a7082;
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   margin: 0;
+  opacity: 0.88;
   text-transform: uppercase;
 }
 

@@ -95,7 +95,7 @@ function SessionManager({
     <section className={`panel ${fullWidth ? 'panel--full-width' : ''}`}>
       <div className="panel__heading">
         <div>
-          <p className="panel__eyebrow">Xuyang Shen</p>
+          <p className="panel__eyebrow">Built by Xuyang Shen</p>
           <h2>Session Logging</h2>
         </div>
         <div className="panel__heading-actions">

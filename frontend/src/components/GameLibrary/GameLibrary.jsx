@@ -6,6 +6,7 @@ import GameList from './GameList.jsx';
 import './GameLibrary.css';
 
 const emptyGame = {
+  id: '',
   name: '',
   category: '',
   minPlayers: 2,
@@ -20,12 +21,14 @@ function GameLibrary({ games, loading, onDataChange, onOpenSessionLogging, setEr
 
   async function handleSubmit(payload) {
     setSubmitting(true);
+    const { id, ...gamePayload } = payload;
+    const targetGameId = id || editingGame?.id;
 
     try {
-      if (editingGame) {
-        await api.updateGame(editingGame.id, payload);
+      if (targetGameId) {
+        await api.updateGame(targetGameId, gamePayload);
       } else {
-        await api.createGame(payload);
+        await api.createGame(gamePayload);
       }
 
       setEditingGame(null);
@@ -65,7 +68,7 @@ function GameLibrary({ games, loading, onDataChange, onOpenSessionLogging, setEr
     <section className="panel">
       <div className="panel__heading">
         <div>
-          <p className="panel__eyebrow">Xuyang Shen</p>
+          <p className="panel__eyebrow">Built by Gaoyuan Shi</p>
           <h2>Game Library</h2>
         </div>
         <div className="panel__controls">
@@ -88,6 +91,7 @@ function GameLibrary({ games, loading, onDataChange, onOpenSessionLogging, setEr
         </div>
       </div>
       <GameForm
+        games={games}
         initialValues={editingGame || emptyGame}
         onSubmit={handleSubmit}
         onCancel={() => setEditingGame(null)}

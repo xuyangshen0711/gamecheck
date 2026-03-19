@@ -63,7 +63,7 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
     <section className="statistics-page">
       <div className="panel__heading">
         <div>
-          <p className="panel__eyebrow">Gaoyuan Shi</p>
+          <p className="panel__eyebrow">Built by Gaoyuan Shi</p>
           <h2>Player Statistics &amp; History</h2>
         </div>
         <label className="statistics-page__focus-filter">

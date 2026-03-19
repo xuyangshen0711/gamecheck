@@ -1,6 +1,9 @@
+import { pathToFileURL } from 'url';
 import { connectToDatabase, closeDatabase } from '../src/db/mongo.js';
 
-const curatedGames = [
+export const SESSIONS_PER_GAME = 50;
+
+export const curatedGames = [
   {
     name: 'Azul',
     category: 'Abstract',
@@ -57,79 +60,252 @@ const curatedGames = [
     maxPlayers: 5,
     description: 'Place landscape tiles and followers to build a medieval countryside.',
   },
+  {
+    name: '7 Wonders',
+    category: 'Card Drafting',
+    minPlayers: 3,
+    maxPlayers: 7,
+    description: 'Draft cards across three ages and build the strongest civilization.',
+  },
+  {
+    name: 'Dominion',
+    category: 'Deck Building',
+    minPlayers: 2,
+    maxPlayers: 4,
+    description: 'Build a powerful deck and optimize every turn for points.',
+  },
+  {
+    name: 'Cascadia',
+    category: 'Puzzle',
+    minPlayers: 1,
+    maxPlayers: 4,
+    description: 'Balance habitats and wildlife tokens in a calm spatial puzzle.',
+  },
+  {
+    name: 'Dixit',
+    category: 'Party',
+    minPlayers: 3,
+    maxPlayers: 6,
+    description: 'Tell imaginative clues and guess the storyteller’s card.',
+  },
+  {
+    name: 'The Crew',
+    category: 'Cooperative',
+    minPlayers: 2,
+    maxPlayers: 5,
+    description: 'Complete mission-based trick-taking tasks as a team.',
+  },
+  {
+    name: 'Sushi Go!',
+    category: 'Card Drafting',
+    minPlayers: 2,
+    maxPlayers: 5,
+    description: 'Draft cute sushi combos for quick and satisfying scoring.',
+  },
+  {
+    name: 'King of Tokyo',
+    category: 'Dice',
+    minPlayers: 2,
+    maxPlayers: 6,
+    description: 'Roll dice, battle monsters, and become the ruler of Tokyo.',
+  },
+  {
+    name: 'Patchwork',
+    category: 'Abstract',
+    minPlayers: 2,
+    maxPlayers: 2,
+    description: 'Fit fabric pieces efficiently to build the best quilt.',
+  },
+  {
+    name: 'Root',
+    category: 'Strategy',
+    minPlayers: 2,
+    maxPlayers: 4,
+    description: 'Lead an asymmetric woodland faction to victory.',
+  },
+  {
+    name: 'Jaipur',
+    category: 'Card Game',
+    minPlayers: 2,
+    maxPlayers: 2,
+    description: 'Trade goods efficiently in a sharp two-player market duel.',
+  },
+  {
+    name: 'Heat: Pedal to the Metal',
+    category: 'Racing',
+    minPlayers: 1,
+    maxPlayers: 6,
+    description: 'Manage speed, corners, and upgrades in a tense racing game.',
+  },
+  {
+    name: 'Scout',
+    category: 'Card Game',
+    minPlayers: 2,
+    maxPlayers: 5,
+    description: 'Sequence your hand cleverly in a compact climbing card game.',
+  },
+  {
+    name: 'Hanabi',
+    category: 'Cooperative',
+    minPlayers: 2,
+    maxPlayers: 5,
+    description: 'Work together to build fireworks using hidden information.',
+  },
+  {
+    name: 'Forbidden Island',
+    category: 'Cooperative',
+    minPlayers: 2,
+    maxPlayers: 4,
+    description: 'Recover treasures and escape before the island sinks.',
+  },
+  {
+    name: 'Sequence',
+    category: 'Family',
+    minPlayers: 2,
+    maxPlayers: 6,
+    description: 'Play cards and form rows of chips on the board.',
+  },
+  {
+    name: 'Everdell',
+    category: 'Worker Placement',
+    minPlayers: 1,
+    maxPlayers: 4,
+    description: 'Build a woodland city with careful worker and card timing.',
+  },
 ];
 
-const sharedPlayerGroups = [
-  ['Alex', 'Jordan'],
-  ['Taylor', 'Morgan', 'Riley'],
-  ['Casey', 'Jamie', 'Avery', 'Parker'],
-  ['Drew', 'Sam', 'Quinn', 'Alex', 'Jordan'],
-  ['Riley', 'Casey', 'Jamie', 'Avery', 'Parker', 'Morgan'],
+const playerPool = [
+  'Alex',
+  'Jordan',
+  'Taylor',
+  'Morgan',
+  'Riley',
+  'Casey',
+  'Jamie',
+  'Avery',
+  'Parker',
+  'Drew',
+  'Sam',
+  'Quinn',
+  'Harper',
+  'Logan',
+  'Rowan',
+  'Cameron',
+  'Skyler',
+  'Reese',
+  'Emerson',
+  'Blake',
+  'Hayden',
+  'Finley',
+  'Sydney',
+  'Kendall',
 ];
 
 const notesByCategory = {
   Abstract: [
-    'A careful final round of tile drafting decided the winner.',
-    'Pattern building paid off after a tight mid-game score.',
-    'One risky move opened the door for a late comeback.',
+    'A careful late-game pattern made the difference.',
+    'Every small placement mattered in the final score.',
+    'A clean tactical plan held up all the way through scoring.',
   ],
   Strategy: [
-    'A long-term engine plan finally pulled ahead in the endgame.',
-    'Table talk stayed calm until one swing turn changed everything.',
-    'A small efficiency edge held up through the final scoring round.',
+    'Long-term planning beat a stronger early start.',
+    'One smart pivot in the middle game changed the outcome.',
+    'The winner built a steady advantage and never gave it back.',
   ],
   Party: [
-    'The table stayed loud from the opening clue to the final guess.',
-    'One bold call changed the entire pace of the round.',
-    'Fast teamwork and confident guesses wrapped this one up quickly.',
+    'The table got loud almost immediately and stayed that way.',
+    'One clue changed the tone of the whole round.',
+    'Fast guesses kept the pace high from start to finish.',
   ],
   Family: [
-    'Route planning in the middle game made the difference.',
-    'A blocked connection forced a creative backup plan.',
-    'The final tickets revealed a much closer game than expected.',
+    'Everyone stayed close until the final scoring reveal.',
+    'A simple plan executed well beat the flashier play.',
+    'The table learned quickly and asked for a rematch.',
   ],
   Cooperative: [
-    'The team stabilized the board just before the game spiraled.',
-    'Role coordination mattered more than any single lucky draw.',
-    'A tense final turn barely kept the outbreak chain under control.',
+    'The team recovered from a rough opening and stabilized late.',
+    'Communication stayed tight under pressure.',
+    'A last-turn save kept the mission alive.',
   ],
   'Engine Building': [
-    'A strong early economy turned into a smooth prestige finish.',
-    'Noble pressure changed the buying priorities halfway through.',
-    'Small card discounts stacked into a decisive late-game burst.',
+    'A smooth economy engine paid off in the closing turns.',
+    'The winner stacked discounts early and never slowed down.',
+    'A strong final round turned setup into points efficiently.',
   ],
   'Tile Placement': [
-    'Meeple timing created a surprise scoring swing near the end.',
-    'A single tile draw opened up two great placement options.',
-    'Field scoring flipped the leaderboard after a quiet start.',
+    'One flexible tile created the best scoring window of the game.',
+    'Meeple timing decided more than anyone expected.',
+    'The board looked calm until the last scoring swing.',
+  ],
+  'Card Drafting': [
+    'Table reads mattered as much as the cards themselves.',
+    'The strongest lane stayed open just long enough.',
+    'Quick decisions kept the drafting rounds moving smoothly.',
+  ],
+  'Deck Building': [
+    'A lean deck outperformed the greedier build.',
+    'Treasure timing and action chains lined up well.',
+    'The winner stayed disciplined and kept the deck efficient.',
+  ],
+  Puzzle: [
+    'A balanced approach outscored a narrow specialization.',
+    'Small positional edges added up over time.',
+    'The best final layout was only obvious at the end.',
+  ],
+  Dice: [
+    'A few aggressive rerolls created a dramatic finish.',
+    'Risky attacks worked just enough to swing momentum.',
+    'The table stayed tense every time the dice hit the board.',
+  ],
+  'Card Game': [
+    'Hand management mattered more than raw tempo.',
+    'A patient line paid off once the scoring windows opened.',
+    'The turning point came from one well-timed exchange.',
+  ],
+  Racing: [
+    'Heat management separated the front runners from the pack.',
+    'A bold cornering line paid off in the last lap.',
+    'The race stayed close until the final push.',
+  ],
+  'Worker Placement': [
+    'Resource pressure made every worker placement matter.',
+    'The winner built a flexible engine without wasting actions.',
+    'A stronger final season closed out the table cleanly.',
   ],
 };
 
 const defaultNotes = [
-  'A close game stayed competitive until the final scoring step.',
-  'The table settled into a good rhythm after the opening turns.',
-  'A late momentum swing gave the winner just enough breathing room.',
+  'The game stayed competitive all the way through the final scoring step.',
+  'A steady plan and a calm finish earned the win.',
+  'Momentum shifted more than once before the last round settled it.',
 ];
 
-function getPlayerGroupsForGame(game) {
-  return sharedPlayerGroups.filter(
-    (group) => group.length >= game.minPlayers && group.length <= game.maxPlayers
-  );
+function buildPlayers(game, gameIndex, sessionIndex) {
+  const minPlayers = Math.max(1, Number(game.minPlayers) || 1);
+  const maxPlayers = Math.max(minPlayers, Math.min(Number(game.maxPlayers) || minPlayers, 6));
+  const playerCount = minPlayers + ((gameIndex + sessionIndex) % (maxPlayers - minPlayers + 1));
+  const startIndex = (gameIndex * 7 + sessionIndex * 3) % playerPool.length;
+  const players = [];
+
+  for (let index = 0; index < playerCount; index += 1) {
+    players.push(playerPool[(startIndex + index) % playerPool.length]);
+  }
+
+  return players;
 }
 
-function buildSessions(games) {
-  const baseDate = new Date('2026-03-01T00:00:00.000Z');
+export function buildSessions(games) {
+  const baseDate = new Date('2025-01-01T00:00:00.000Z');
   const sessions = [];
 
   games.forEach((game, gameIndex) => {
-    const playerGroups = getPlayerGroupsForGame(game);
     const notes = notesByCategory[game.category] || defaultNotes;
 
-    for (let index = 0; index < 6; index += 1) {
-      const players = playerGroups[index % playerGroups.length];
-      const winner = players[(index + gameIndex) % players.length];
+    for (let sessionIndex = 0; sessionIndex < SESSIONS_PER_GAME; sessionIndex += 1) {
+      const players = buildPlayers(game, gameIndex, sessionIndex);
+      const winner = players[(gameIndex + sessionIndex * 2) % players.length];
       const sessionDate = new Date(baseDate);
-      sessionDate.setUTCDate(baseDate.getUTCDate() + gameIndex * 6 + index);
+      sessionDate.setUTCDate(baseDate.getUTCDate() + gameIndex * SESSIONS_PER_GAME + sessionIndex);
 
       sessions.push({
         gameId: game._id.toString(),
@@ -137,7 +313,7 @@ function buildSessions(games) {
         sessionDate: sessionDate.toISOString().slice(0, 10),
         players,
         winner,
-        notes: notes[index % notes.length],
+        notes: notes[sessionIndex % notes.length],
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -147,7 +323,7 @@ function buildSessions(games) {
   return sessions;
 }
 
-async function seed() {
+export async function seed() {
   const db = await connectToDatabase();
   const gamesCollection = db.collection('games');
   const sessionsCollection = db.collection('sessions');
@@ -167,12 +343,16 @@ async function seed() {
   const sessions = buildSessions(insertedGames);
 
   await sessionsCollection.insertMany(sessions);
-  console.log(`Database seeded with ${insertedGames.length} games and ${sessions.length} sessions.`);
+  console.log(
+    `Database seeded with ${insertedGames.length} games and ${sessions.length} sessions (${insertedGames.length + sessions.length} total records).`
+  );
   await closeDatabase();
 }
 
-seed().catch(async (error) => {
-  console.error('Failed to seed database.', error);
-  await closeDatabase();
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  seed().catch(async (error) => {
+    console.error('Failed to seed database.', error);
+    await closeDatabase();
+    process.exit(1);
+  });
+}

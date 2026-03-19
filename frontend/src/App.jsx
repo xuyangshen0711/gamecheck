@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api.js';
+import AuthPanel from './components/Auth/AuthPanel.jsx';
 import Dashboard from './components/Dashboard/Dashboard.jsx';
 import Header from './components/Layout/Header.jsx';
 import GameLibrary from './components/GameLibrary/GameLibrary.jsx';
 import SessionManager from './components/SessionManager/SessionManager.jsx';
 import StatisticsPage from './components/Statistics/StatisticsPage.jsx';
 import './styles/App.css';
+
+const emptySessionFilters = {
+  gameId: '',
+  player: '',
+};
 
 function hasActiveSessionFilters(filters) {
   return Boolean(filters.gameId || filters.player.trim());
@@ -16,18 +22,20 @@ function App() {
   const [allSessions, setAllSessions] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [stats, setStats] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [activePanel, setActivePanel] = useState('both');
   const [focusedStatsPlayer, setFocusedStatsPlayer] = useState('');
-  const [sessionFilters, setSessionFilters] = useState({
-    gameId: '',
-    player: '',
-  });
+  const [sessionFilters, setSessionFilters] = useState(emptySessionFilters);
   const [errorMessage, setErrorMessage] = useState('');
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authSubmitting, setAuthSubmitting] = useState(false);
+  const [logoutPending, setLogoutPending] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const activeRequestControllerRef = useRef(null);
   const activeStatsRequestControllerRef = useRef(null);
+  const hasLoadedDataRef = useRef(false);
   const isEmptyDeployment =
     !initialLoading && !errorMessage && games.length === 0 && allSessions.length === 0;
   const playerSuggestions = useMemo(() => {
@@ -50,6 +58,30 @@ function App() {
       .map(([player]) => player);
   }, [allSessions]);
 
+  const resetWorkspaceState = useCallback(() => {
+    activeRequestControllerRef.current?.abort();
+    activeStatsRequestControllerRef.current?.abort();
+    activeRequestControllerRef.current = null;
+    activeStatsRequestControllerRef.current = null;
+    hasLoadedDataRef.current = false;
+    setGames([]);
+    setAllSessions([]);
+    setSessions([]);
+    setStats(null);
+    setActivePanel('both');
+    setFocusedStatsPlayer('');
+    setSessionFilters(emptySessionFilters);
+    setInitialLoading(false);
+    setStatsLoading(false);
+    setRefreshing(false);
+  }, []);
+
+  const clearAuthenticationState = useCallback((message = '') => {
+    setCurrentUser(null);
+    resetWorkspaceState();
+    setErrorMessage(message);
+  }, [resetWorkspaceState]);
+
   const loadStats = useCallback(async (player = '') => {
     activeStatsRequestControllerRef.current?.abort();
     const controller = new AbortController();
@@ -66,6 +98,11 @@ function App() {
         return;
       }
 
+      if (error.status === 401) {
+        clearAuthenticationState('Your session expired. Please sign in again.');
+        return;
+      }
+
       setErrorMessage(error.message);
     } finally {
       if (activeStatsRequestControllerRef.current === controller) {
@@ -73,15 +110,14 @@ function App() {
         setStatsLoading(false);
       }
     }
-  }, []);
+  }, [clearAuthenticationState]);
 
   const loadData = useCallback(async (filters = {}) => {
     activeRequestControllerRef.current?.abort();
     const controller = new AbortController();
     activeRequestControllerRef.current = controller;
-    const isFirstLoad = initialLoading && games.length === 0 && allSessions.length === 0;
 
-    if (isFirstLoad) {
+    if (!hasLoadedDataRef.current) {
       setInitialLoading(true);
     } else {
       setRefreshing(true);
@@ -113,25 +149,60 @@ function App() {
         return;
       }
 
+      if (error.status === 401) {
+        clearAuthenticationState('Your session expired. Please sign in again.');
+        return;
+      }
+
       setErrorMessage(error.message);
     } finally {
       if (activeRequestControllerRef.current === controller) {
         activeRequestControllerRef.current = null;
         setInitialLoading(false);
         setRefreshing(false);
+        hasLoadedDataRef.current = true;
       }
     }
-  }, [allSessions.length, games.length, initialLoading]);
+  }, [clearAuthenticationState]);
 
   useEffect(() => {
-    loadData();
-    loadStats();
+    async function initializeSession() {
+      setAuthLoading(true);
+
+      try {
+        const sessionPayload = await api.getCurrentUser();
+        const nextUser = sessionPayload.user;
+
+        setCurrentUser(nextUser);
+        setErrorMessage('');
+
+        if (nextUser) {
+          await Promise.all([loadData(), loadStats()]);
+        } else {
+          resetWorkspaceState();
+        }
+      } catch (error) {
+        setErrorMessage(error.message);
+        resetWorkspaceState();
+      } finally {
+        setAuthLoading(false);
+      }
+    }
+
+    function handleUnauthorized() {
+      setAuthLoading(false);
+      clearAuthenticationState('Your session expired. Please sign in again.');
+    }
+
+    initializeSession();
+    window.addEventListener('gamecheck:unauthorized', handleUnauthorized);
 
     return () => {
       activeRequestControllerRef.current?.abort();
       activeStatsRequestControllerRef.current?.abort();
+      window.removeEventListener('gamecheck:unauthorized', handleUnauthorized);
     };
-  }, [loadData, loadStats]);
+  }, [clearAuthenticationState, loadData, loadStats, resetWorkspaceState]);
 
   async function handleDataChange(filters) {
     await Promise.all([loadData(filters), loadStats(focusedStatsPlayer)]);
@@ -142,10 +213,63 @@ function App() {
     await loadStats(player);
   }
 
+  async function handleAuthenticate(credentials, mode) {
+    setAuthSubmitting(true);
+
+    try {
+      const payload =
+        mode === 'register'
+          ? await api.register(credentials)
+          : await api.login(credentials);
+
+      setCurrentUser(payload.user);
+      setErrorMessage('');
+      setInitialLoading(true);
+      setStatsLoading(true);
+      hasLoadedDataRef.current = false;
+      await Promise.all([loadData(), loadStats()]);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setAuthSubmitting(false);
+      setAuthLoading(false);
+    }
+  }
+
+  async function handleLogout() {
+    setLogoutPending(true);
+
+    try {
+      await api.logout();
+      clearAuthenticationState('');
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setLogoutPending(false);
+    }
+  }
+
   return (
     <div className="app-shell">
-      <Header />
+      <Header currentUser={currentUser} onLogout={handleLogout} logoutPending={logoutPending} />
       {errorMessage ? <p className="app-shell__error">{errorMessage}</p> : null}
+      {authLoading ? (
+        <section className="app-shell__notice">
+          <h2>Checking session</h2>
+          <p>Loading your authentication state and preparing the workspace.</p>
+        </section>
+      ) : null}
+      {!authLoading && !currentUser ? (
+        <main className="app-shell__auth">
+          <AuthPanel
+            submitting={authSubmitting}
+            errorMessage={errorMessage}
+            onAuthenticate={handleAuthenticate}
+          />
+        </main>
+      ) : null}
+      {authLoading || !currentUser ? null : (
+        <>
       {isEmptyDeployment ? (
         <section className="app-shell__notice">
           <h2>Deployment is working</h2>
@@ -218,6 +342,8 @@ function App() {
           />
         ) : null}
       </main>
+        </>
+      )}
     </div>
   );
 }

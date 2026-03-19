@@ -12,6 +12,7 @@
 ## Project Objective
 
 GameCheck is a full-stack web application for tracking a personal board game library, recording game night sessions, and reviewing player statistics. The project follows the required CS5610 Project 3 stack: Node.js, Express, client-side rendered React with Hooks, and MongoDB using the official Node.js driver.
+It now also implements authentication using Passport with a local username/password strategy and server-side sessions.
 
 ## Team Scope And Independent User Stories
 
@@ -33,9 +34,10 @@ GameCheck is a full-stack web application for tracking a personal board game lib
 
 1. Copy `backend/.env.example` to `backend/.env`.
 2. Install dependencies in `backend/`.
-3. Start MongoDB locally or provide a MongoDB connection string.
-4. Run `npm run seed` to generate synthetic data.
-5. Run `npm run dev` or `npm start`.
+3. Set `SESSION_SECRET` in `backend/.env`.
+4. Start MongoDB locally or provide a MongoDB connection string.
+5. Run `npm run seed` to generate synthetic data. The primary seed creates more than 1,000 MongoDB records across the `games` and `sessions` collections.
+6. Run `npm run dev` or `npm start`.
 
 ### Frontend
 
@@ -67,6 +69,7 @@ MONGO_URI="your-atlas-connection-string" npm run render-seed
 - Filter sessions by game and player.
 - View a lightweight dashboard summary for games, sessions, players, and the latest winner.
 - View player statistics such as win rates, streaks, rivalry matchups, and most-played games.
+- Register, sign in, and sign out with Passport local authentication.
 
 ## Project Structure
 

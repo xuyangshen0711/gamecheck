@@ -12,3 +12,5 @@ services:
         sync: false
       - key: MONGO_DB_NAME
         value: gamecheck
+      - key: SESSION_SECRET
+        sync: false

@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "lint": "eslint .",
     "seed": "node scripts/seed.js",
+    "seed:stats": "node scripts/seed-stats-sample.js",
     "test": "node --test"
   },
   "dependencies": {

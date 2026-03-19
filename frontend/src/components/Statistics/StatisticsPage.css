@@ -1,0 +1,208 @@
+.statistics-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.statistics-page__focus-filter {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 220px;
+}
+
+.statistics-page__hero {
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent 24rem),
+    linear-gradient(135deg, #17324d, #2b6b63);
+  border-radius: 24px;
+  color: #f6fbff;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1.15fr 1fr;
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+.statistics-page__hero-copy {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.statistics-page__hero-copy h3,
+.statistics-page__hero-copy p {
+  margin: 0;
+}
+
+.statistics-page__eyebrow {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin: 0;
+  opacity: 0.78;
+  text-transform: uppercase;
+}
+
+.statistics-page__metrics {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.statistics-page__metric,
+.statistics-page__spotlight-card,
+.statistics-page__panel,
+.statistics-page__matchup-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(209, 224, 234, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 18px 30px rgba(23, 50, 77, 0.08);
+}
+
+.statistics-page__metric {
+  color: #17324d;
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem;
+}
+
+.statistics-page__metric span,
+.statistics-page__spotlight-card span {
+  color: #5d7489;
+  font-size: 0.92rem;
+}
+
+.statistics-page__metric strong,
+.statistics-page__spotlight-card strong {
+  font-size: 1.9rem;
+  line-height: 1.1;
+}
+
+.statistics-page__metric small,
+.statistics-page__spotlight-card p,
+.statistics-page__ranking-card p,
+.statistics-page__section-heading p,
+.statistics-page__matchup-card p {
+  color: #5d7489;
+  margin: 0;
+}
+
+.statistics-page__insights {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.statistics-page__spotlight-card {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1.25rem;
+}
+
+.statistics-page__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.statistics-page__panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.statistics-page__section-heading {
+  align-items: start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.statistics-page__section-heading h3,
+.statistics-page__ranking-card h4,
+.statistics-page__matchup-card h4 {
+  margin: 0;
+}
+
+.statistics-page__rankings,
+.statistics-page__matchups {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.statistics-page__ranking-card {
+  align-items: start;
+  background: #f9fcfe;
+  border: 1px solid #e4ecf2;
+  border-radius: 18px;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: auto 1fr;
+  padding: 1rem;
+}
+
+.statistics-page__ranking-card strong,
+.statistics-page__matchup-card strong {
+  color: #17324d;
+  display: block;
+  font-size: 1.2rem;
+  margin: 0.2rem 0;
+}
+
+.statistics-page__ranking-order {
+  align-items: center;
+  background: #17324d;
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 700;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.statistics-page__matchups {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.statistics-page__matchup-card {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem;
+}
+
+.statistics-page__matchup-header {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.statistics-page__matchup-header span {
+  color: #2b6b63;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+  .statistics-page__hero,
+  .statistics-page__grid,
+  .statistics-page__insights,
+  .statistics-page__matchups {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .statistics-page__metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .statistics-page__section-heading,
+  .panel__heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .statistics-page__focus-filter {
+    min-width: 0;
+  }
+}

@@ -4,6 +4,7 @@ import Dashboard from './components/Dashboard/Dashboard.jsx';
 import Header from './components/Layout/Header.jsx';
 import GameLibrary from './components/GameLibrary/GameLibrary.jsx';
 import SessionManager from './components/SessionManager/SessionManager.jsx';
+import StatisticsPage from './components/Statistics/StatisticsPage.jsx';
 import './styles/App.css';
 
 function hasActiveSessionFilters(filters) {
@@ -14,15 +15,19 @@ function App() {
   const [games, setGames] = useState([]);
   const [allSessions, setAllSessions] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [stats, setStats] = useState(null);
   const [activePanel, setActivePanel] = useState('both');
+  const [focusedStatsPlayer, setFocusedStatsPlayer] = useState('');
   const [sessionFilters, setSessionFilters] = useState({
     gameId: '',
     player: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [initialLoading, setInitialLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const activeRequestControllerRef = useRef(null);
+  const activeStatsRequestControllerRef = useRef(null);
   const isEmptyDeployment =
     !initialLoading && !errorMessage && games.length === 0 && allSessions.length === 0;
   const playerSuggestions = useMemo(() => {
@@ -44,6 +49,31 @@ function App() {
       })
       .map(([player]) => player);
   }, [allSessions]);
+
+  const loadStats = useCallback(async (player = '') => {
+    activeStatsRequestControllerRef.current?.abort();
+    const controller = new AbortController();
+    activeStatsRequestControllerRef.current = controller;
+
+    setStatsLoading(true);
+
+    try {
+      const statsPayload = await api.getStats({ player }, { signal: controller.signal });
+      setStats(statsPayload);
+      setErrorMessage('');
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        return;
+      }
+
+      setErrorMessage(error.message);
+    } finally {
+      if (activeStatsRequestControllerRef.current === controller) {
+        activeStatsRequestControllerRef.current = null;
+        setStatsLoading(false);
+      }
+    }
+  }, []);
 
   const loadData = useCallback(async (filters = {}) => {
     activeRequestControllerRef.current?.abort();
@@ -95,11 +125,22 @@ function App() {
 
   useEffect(() => {
     loadData();
+    loadStats();
 
     return () => {
       activeRequestControllerRef.current?.abort();
+      activeStatsRequestControllerRef.current?.abort();
     };
-  }, [loadData]);
+  }, [loadData, loadStats]);
+
+  async function handleDataChange(filters) {
+    await Promise.all([loadData(filters), loadStats(focusedStatsPlayer)]);
+  }
+
+  async function handleStatsFocusChange(player) {
+    setFocusedStatsPlayer(player);
+    await loadStats(player);
+  }
 
   return (
     <div className="app-shell">
@@ -116,32 +157,66 @@ function App() {
         </section>
       ) : null}
       <Dashboard games={games} sessions={allSessions} loading={initialLoading} />
+      <section className="app-shell__view-switcher">
+        <button
+          type="button"
+          className={activePanel === 'both' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
+          onClick={() => setActivePanel('both')}
+        >
+          Workspace
+        </button>
+        <button
+          type="button"
+          className={activePanel === 'sessions' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
+          onClick={() => setActivePanel('sessions')}
+        >
+          Sessions
+        </button>
+        <button
+          type="button"
+          className={activePanel === 'stats' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
+          onClick={() => setActivePanel('stats')}
+        >
+          Statistics
+        </button>
+      </section>
       <main
         className={`app-shell__content ${
-          activePanel === 'sessions' ? 'app-shell__content--single' : ''
+          activePanel === 'sessions' || activePanel === 'stats' ? 'app-shell__content--single' : ''
         }`}
       >
-        {activePanel !== 'sessions' ? (
+        {activePanel === 'both' ? (
           <GameLibrary
             games={games}
             loading={initialLoading}
-            onDataChange={() => loadData(sessionFilters)}
+            onDataChange={() => handleDataChange(sessionFilters)}
             onOpenSessionLogging={() => setActivePanel('sessions')}
             setErrorMessage={setErrorMessage}
           />
         ) : null}
-        <SessionManager
-          games={games}
-          sessions={sessions}
-          filters={sessionFilters}
-          playerSuggestions={playerSuggestions}
-          loading={initialLoading}
-          refreshing={refreshing}
-          fullWidth={activePanel === 'sessions'}
-          onShowAllPanels={() => setActivePanel('both')}
-          onDataChange={(filters) => loadData(filters)}
-          setErrorMessage={setErrorMessage}
-        />
+        {activePanel !== 'stats' ? (
+          <SessionManager
+            games={games}
+            sessions={sessions}
+            filters={sessionFilters}
+            playerSuggestions={playerSuggestions}
+            loading={initialLoading}
+            refreshing={refreshing}
+            fullWidth={activePanel === 'sessions'}
+            onShowAllPanels={() => setActivePanel('both')}
+            onDataChange={handleDataChange}
+            setErrorMessage={setErrorMessage}
+          />
+        ) : null}
+        {activePanel === 'stats' ? (
+          <StatisticsPage
+            stats={stats}
+            loading={statsLoading}
+            focusedPlayer={focusedStatsPlayer}
+            playerSuggestions={playerSuggestions}
+            onFocusPlayerChange={handleStatsFocusChange}
+          />
+        ) : null}
       </main>
     </div>
   );

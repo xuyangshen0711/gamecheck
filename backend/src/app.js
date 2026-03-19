@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import express from 'express';
 import gamesRouter from './routes/games.js';
 import sessionsRouter from './routes/sessions.js';
+import statsRouter from './routes/stats.js';
 import { corsMiddleware } from './middleware/cors.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,6 +23,7 @@ export function createApp() {
 
   app.use('/api/games', gamesRouter);
   app.use('/api/sessions', sessionsRouter);
+  app.use('/api/stats', statsRouter);
 
   if (existsSync(frontendDistPath)) {
     app.use(express.static(frontendDistPath));

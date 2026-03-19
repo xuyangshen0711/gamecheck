@@ -81,4 +81,14 @@ export const api = {
       method: 'DELETE',
     });
   },
+  getStats(filters = {}, options = {}) {
+    const params = new URLSearchParams();
+
+    if (filters.player) {
+      params.set('player', filters.player);
+    }
+
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return request(`/stats${query}`, options);
+  },
 };

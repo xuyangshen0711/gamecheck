@@ -16,6 +16,23 @@
   grid-template-columns: 1fr;
 }
 
+.app-shell__view-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.app-shell__view-button {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid #d8e4ed;
+  color: #17324d;
+}
+
+.app-shell__view-button--active {
+  background: #17324d;
+  color: #ffffff;
+}
+
 .app-shell__error {
   background: #fff4f1;
   border: 1px solid #f5b4a5;

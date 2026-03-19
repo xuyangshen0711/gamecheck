@@ -76,18 +76,6 @@ The main workspace combines the dashboard, game library, and session logging too
 
 ![GameCheck workspace overview screenshot](docs/screenshots/workspace-overview.png)
 
-### CRUD Workflow
-
-Users can create, edit, delete, search, and filter games and sessions directly from the workspace.
-
-![GameCheck CRUD workflow screenshot](docs/screenshots/workspace-crud.png)
-
-### Statistics View
-
-The statistics page summarizes win rates, streaks, rivalries, and most-played games from the seeded MongoDB data.
-
-![GameCheck statistics screenshot](docs/screenshots/statistics-page.png)
-
 ## Feature Scope
 
 - Create, edit, delete, search, and browse games in the library.

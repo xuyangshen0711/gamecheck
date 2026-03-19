@@ -1,7 +1,8 @@
 # GameCheck
 
-## Author
+## Authors
 
+- Gaoyuan Shi
 - Xuyang Shen
 
 ## Class Link
@@ -10,11 +11,21 @@
 
 ## Project Objective
 
-GameCheck is a full-stack web application for tracking a personal board game library and recording game night sessions. This implementation focuses on Xuyang Shen's assigned scope: game library management and session logging.
+GameCheck is a full-stack web application for tracking a personal board game library, recording game night sessions, and reviewing player statistics. The project follows the required CS5610 Project 3 stack: Node.js, Express, client-side rendered React with Hooks, and MongoDB using the official Node.js driver.
 
-## Screenshot
+## Team Scope And Independent User Stories
 
-- Add a screenshot of the running app before submission.
+### Gaoyuan Shi
+
+- Build and maintain the game library workspace, including game browsing, search, selection, and game metadata editing.
+- Extend the product with player statistics and history views, including summaries, win rates, streaks, and head-to-head insights.
+- Implement the full stack for these stories, including React UI, API integration, and backend data support.
+
+### Xuyang Shen
+
+- Build and maintain the session logging workflow, including creating, editing, deleting, and filtering logged play sessions.
+- Implement the dashboard and session-oriented interactions for reviewing recent activity and session summaries.
+- Implement the full stack for these stories, including React UI, Express routes, and MongoDB persistence.
 
 ## Instructions to Build
 
@@ -34,7 +45,7 @@ GameCheck is a full-stack web application for tracking a personal board game lib
 
 ## Render Deployment
 
-This repository includes a root-level [render.yaml](/Users/barry/Desktop/CS5610/Project%203/render.yaml) so you can deploy the app as a single Render web service.
+This repository includes a root-level [render.yaml](./render.yaml) so you can deploy the app as a single Render web service.
 
 1. Push the repository to GitHub.
 2. Create a MongoDB Atlas cluster and copy the application connection string.
@@ -55,13 +66,19 @@ MONGO_URI="your-atlas-connection-string" npm run render-seed
 - Create, edit, delete, filter, and browse logged sessions.
 - Filter sessions by game and player.
 - View a lightweight dashboard summary for games, sessions, players, and the latest winner.
+- View player statistics such as win rates, streaks, rivalry matchups, and most-played games.
 
 ## Project Structure
 
 - `backend/`: Express API, MongoDB driver integration, and seed script.
 - `frontend/`: React client with hooks, PropTypes, and component-scoped CSS.
 
-## Notes
+## Assignment Notes
 
 - The project uses `fetch` on the frontend and the MongoDB Node driver on the backend.
 - The project intentionally avoids `axios`, `mongoose`, and the `cors` package to align with the assignment restrictions.
+
+## AI Usage Disclosure
+
+- AI tools were used for limited development support such as debugging, wording cleanup, and small UI/code refinements.
+- The application structure, implementation decisions, and final review were completed by the project team.

@@ -4,16 +4,28 @@ import './GameForm.css';
 
 const CUSTOM_GAME_VALUE = '__custom__';
 const ALL_GAMES_VALUE = '';
+const CURATED_GAME_NAMES = ['Azul', 'Catan', 'Codenames', 'Wingspan'];
 
 function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitting }) {
   const [formValues, setFormValues] = useState(initialValues);
-  const [selectedGameId, setSelectedGameId] = useState(
-    initialValues.id || ALL_GAMES_VALUE
-  );
+
+  function getSelectedGameValue(game) {
+    if (!game.id && !game.name) {
+      return ALL_GAMES_VALUE;
+    }
+
+    if (CURATED_GAME_NAMES.includes(game.name)) {
+      return game.name;
+    }
+
+    return CUSTOM_GAME_VALUE;
+  }
+
+  const [selectedGameId, setSelectedGameId] = useState(getSelectedGameValue(initialValues));
 
   useEffect(() => {
     setFormValues(initialValues);
-    setSelectedGameId(initialValues.id || ALL_GAMES_VALUE);
+    setSelectedGameId(getSelectedGameValue(initialValues));
   }, [initialValues]);
 
   function handleChange(event) {
@@ -46,9 +58,14 @@ function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitt
       return;
     }
 
-    const selectedGame = games.find((game) => game.id === value);
+    const selectedGame = games.find((game) => game.name === value);
 
     if (!selectedGame) {
+      setFormValues((currentValues) => ({
+        ...currentValues,
+        id: '',
+        name: value,
+      }));
       return;
     }
 
@@ -63,8 +80,7 @@ function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitt
   }
 
   const isCustomGame = selectedGameId === CUSTOM_GAME_VALUE;
-  const isUpdatingExistingGame =
-    selectedGameId !== ALL_GAMES_VALUE && selectedGameId !== CUSTOM_GAME_VALUE;
+  const isUpdatingExistingGame = Boolean(formValues.id);
 
   return (
     <form className="form-card" onSubmit={handleSubmit}>
@@ -73,9 +89,9 @@ function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitt
           <span>Game</span>
           <select name="selectedGameId" value={selectedGameId} onChange={handleGameSelectionChange}>
             <option value={ALL_GAMES_VALUE}>All games</option>
-            {games.map((game) => (
-              <option key={game.id} value={game.id}>
-                {game.name}
+            {CURATED_GAME_NAMES.map((gameName) => (
+              <option key={gameName} value={gameName}>
+                {gameName}
               </option>
             ))}
             <option value={CUSTOM_GAME_VALUE}>Custom game</option>

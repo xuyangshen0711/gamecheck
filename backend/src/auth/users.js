@@ -56,6 +56,5 @@ export async function createUser(
     updatedAt: now,
   };
   const result = await db.collection('users').insertOne(document);
-
-  return db.collection('users').findOne({ _id: result.insertedId });
+  return { ...document, _id: result.insertedId };
 }

@@ -6,7 +6,13 @@ function getAllowedOrigins() {
     .map((origin) => origin.trim())
     .filter(Boolean);
 
-  return [...new Set([...configuredOrigins, 'http://localhost:5173', 'http://127.0.0.1:5173'])];
+  return [
+    ...new Set([
+      ...configuredOrigins,
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+    ]),
+  ];
 }
 
 export function corsMiddleware(req, res, next) {

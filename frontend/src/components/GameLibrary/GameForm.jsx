@@ -15,7 +15,14 @@ const CURATED_GAME_NAMES = [
   'Carcassonne',
 ];
 
-function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitting }) {
+function GameForm({
+  games,
+  initialValues,
+  onSubmit,
+  onCancel,
+  isEditing,
+  submitting,
+}) {
   const [formValues, setFormValues] = useState(initialValues);
 
   function getSelectedGameValue(game) {
@@ -30,7 +37,9 @@ function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitt
     return CUSTOM_GAME_VALUE;
   }
 
-  const [selectedGameId, setSelectedGameId] = useState(getSelectedGameValue(initialValues));
+  const [selectedGameId, setSelectedGameId] = useState(
+    getSelectedGameValue(initialValues)
+  );
 
   useEffect(() => {
     setFormValues(initialValues);
@@ -41,7 +50,8 @@ function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitt
     const { name, value } = event.target;
     setFormValues((currentValues) => ({
       ...currentValues,
-      [name]: name === 'minPlayers' || name === 'maxPlayers' ? Number(value) : value,
+      [name]:
+        name === 'minPlayers' || name === 'maxPlayers' ? Number(value) : value,
     }));
   }
 
@@ -96,7 +106,11 @@ function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitt
       <div className="form-card__grid">
         <label>
           <span>Game</span>
-          <select name="selectedGameId" value={selectedGameId} onChange={handleGameSelectionChange}>
+          <select
+            name="selectedGameId"
+            value={selectedGameId}
+            onChange={handleGameSelectionChange}
+          >
             <option value={ALL_GAMES_VALUE}>All games</option>
             {CURATED_GAME_NAMES.map((gameName) => (
               <option key={gameName} value={gameName}>
@@ -108,12 +122,22 @@ function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitt
         </label>
         <label>
           <span>Category</span>
-          <input name="category" value={formValues.category} onChange={handleChange} required />
+          <input
+            name="category"
+            value={formValues.category}
+            onChange={handleChange}
+            required
+          />
         </label>
         {isCustomGame ? (
           <label className="form-card__field form-card__field--full">
             <span>Custom game name</span>
-            <input name="name" value={formValues.name} onChange={handleChange} required />
+            <input
+              name="name"
+              value={formValues.name}
+              onChange={handleChange}
+              required
+            />
           </label>
         ) : null}
         <label>
@@ -150,7 +174,11 @@ function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitt
       </label>
       <div className="form-card__actions">
         <button type="submit" disabled={submitting}>
-          {submitting ? 'Saving...' : isEditing || isUpdatingExistingGame ? 'Update Game' : 'Add Game'}
+          {submitting
+            ? 'Saving...'
+            : isEditing || isUpdatingExistingGame
+              ? 'Update Game'
+              : 'Add Game'}
         </button>
         {isEditing ? (
           <button type="button" className="button-secondary" onClick={onCancel}>

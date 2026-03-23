@@ -37,7 +37,10 @@ function App() {
   const activeStatsRequestControllerRef = useRef(null);
   const hasLoadedDataRef = useRef(false);
   const isEmptyDeployment =
-    !initialLoading && !errorMessage && games.length === 0 && allSessions.length === 0;
+    !initialLoading &&
+    !errorMessage &&
+    games.length === 0 &&
+    allSessions.length === 0;
   const playerSuggestions = useMemo(() => {
     const playerCounts = new Map();
 
@@ -76,94 +79,113 @@ function App() {
     setRefreshing(false);
   }, []);
 
-  const clearAuthenticationState = useCallback((message = '') => {
-    setCurrentUser(null);
-    resetWorkspaceState();
-    setErrorMessage(message);
-  }, [resetWorkspaceState]);
+  const clearAuthenticationState = useCallback(
+    (message = '') => {
+      setCurrentUser(null);
+      resetWorkspaceState();
+      setErrorMessage(message);
+    },
+    [resetWorkspaceState]
+  );
 
-  const loadStats = useCallback(async (player = '') => {
-    activeStatsRequestControllerRef.current?.abort();
-    const controller = new AbortController();
-    activeStatsRequestControllerRef.current = controller;
+  const loadStats = useCallback(
+    async (player = '') => {
+      activeStatsRequestControllerRef.current?.abort();
+      const controller = new AbortController();
+      activeStatsRequestControllerRef.current = controller;
 
-    setStatsLoading(true);
+      setStatsLoading(true);
 
-    try {
-      const statsPayload = await api.getStats({ player }, { signal: controller.signal });
-      setStats(statsPayload);
-      setErrorMessage('');
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        return;
+      try {
+        const statsPayload = await api.getStats(
+          { player },
+          { signal: controller.signal }
+        );
+        setStats(statsPayload);
+        setErrorMessage('');
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          return;
+        }
+
+        if (error.status === 401) {
+          clearAuthenticationState(
+            'Your session expired. Please sign in again.'
+          );
+          return;
+        }
+
+        setErrorMessage(error.message);
+      } finally {
+        if (activeStatsRequestControllerRef.current === controller) {
+          activeStatsRequestControllerRef.current = null;
+          setStatsLoading(false);
+        }
+      }
+    },
+    [clearAuthenticationState]
+  );
+
+  const loadData = useCallback(
+    async (filters = {}) => {
+      activeRequestControllerRef.current?.abort();
+      const controller = new AbortController();
+      activeRequestControllerRef.current = controller;
+
+      if (!hasLoadedDataRef.current) {
+        setInitialLoading(true);
+      } else {
+        setRefreshing(true);
       }
 
-      if (error.status === 401) {
-        clearAuthenticationState('Your session expired. Please sign in again.');
-        return;
+      const normalizedFilters = {
+        gameId: filters.gameId || '',
+        player: filters.player || '',
+      };
+
+      try {
+        const requests = [
+          api.listGames('', { signal: controller.signal }),
+          api.listSessions({}, { signal: controller.signal }),
+        ];
+
+        if (hasActiveSessionFilters(normalizedFilters)) {
+          requests.push(
+            api.listSessions(normalizedFilters, { signal: controller.signal })
+          );
+        }
+
+        const [gameData, allSessionData, filteredSessionData] =
+          await Promise.all(requests);
+        setGames(gameData);
+        setAllSessions(allSessionData);
+        setSessions(filteredSessionData || allSessionData);
+        setSessionFilters(normalizedFilters);
+        setErrorMessage('');
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          return;
+        }
+
+        if (error.status === 401) {
+          clearAuthenticationState(
+            'Your session expired. Please sign in again.'
+          );
+          return;
+        }
+
+        setErrorMessage(error.message);
+      } finally {
+        if (activeRequestControllerRef.current === controller) {
+          activeRequestControllerRef.current = null;
+          setInitialLoading(false);
+          setRefreshing(false);
+          hasLoadedDataRef.current = true;
+        }
       }
-
-      setErrorMessage(error.message);
-    } finally {
-      if (activeStatsRequestControllerRef.current === controller) {
-        activeStatsRequestControllerRef.current = null;
-        setStatsLoading(false);
-      }
-    }
-  }, [clearAuthenticationState]);
-
-  const loadData = useCallback(async (filters = {}) => {
-    activeRequestControllerRef.current?.abort();
-    const controller = new AbortController();
-    activeRequestControllerRef.current = controller;
-
-    if (!hasLoadedDataRef.current) {
-      setInitialLoading(true);
-    } else {
-      setRefreshing(true);
-    }
-
-    const normalizedFilters = {
-      gameId: filters.gameId || '',
-      player: filters.player || '',
-    };
-
-    try {
-      const requests = [
-        api.listGames('', { signal: controller.signal }),
-        api.listSessions({}, { signal: controller.signal }),
-      ];
-
-      if (hasActiveSessionFilters(normalizedFilters)) {
-        requests.push(api.listSessions(normalizedFilters, { signal: controller.signal }));
-      }
-
-      const [gameData, allSessionData, filteredSessionData] = await Promise.all(requests);
-      setGames(gameData);
-      setAllSessions(allSessionData);
-      setSessions(filteredSessionData || allSessionData);
-      setSessionFilters(normalizedFilters);
-      setErrorMessage('');
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        return;
-      }
-
-      if (error.status === 401) {
-        clearAuthenticationState('Your session expired. Please sign in again.');
-        return;
-      }
-
-      setErrorMessage(error.message);
-    } finally {
-      if (activeRequestControllerRef.current === controller) {
-        activeRequestControllerRef.current = null;
-        setInitialLoading(false);
-        setRefreshing(false);
-        hasLoadedDataRef.current = true;
-      }
-    }
-  }, [clearAuthenticationState]);
+    },
+    [clearAuthenticationState]
+  );
 
   useEffect(() => {
     async function initializeSession() {
@@ -251,7 +273,11 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Header currentUser={currentUser} onLogout={handleLogout} logoutPending={logoutPending} />
+      <Header
+        currentUser={currentUser}
+        onLogout={handleLogout}
+        logoutPending={logoutPending}
+      />
       {errorMessage ? <p className="app-shell__error">{errorMessage}</p> : null}
       {authLoading ? (
         <section className="app-shell__notice">
@@ -270,78 +296,101 @@ function App() {
       ) : null}
       {authLoading || !currentUser ? null : (
         <>
-      {isEmptyDeployment ? (
-        <section className="app-shell__notice">
-          <h2>Deployment is working</h2>
-          <p>
-            The app is live, but this cloud database does not have sample data yet. Add games and
-            sessions manually, or seed Atlas from your local machine with
-            <code> MONGO_URI=&quot;your-atlas-uri&quot; npm run render-seed</code>.
-          </p>
-        </section>
-      ) : null}
-      <Dashboard games={games} sessions={allSessions} loading={initialLoading} />
-      <section className="app-shell__view-switcher">
-        <button
-          type="button"
-          className={activePanel === 'both' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
-          onClick={() => setActivePanel('both')}
-        >
-          Workspace
-        </button>
-        <button
-          type="button"
-          className={activePanel === 'sessions' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
-          onClick={() => setActivePanel('sessions')}
-        >
-          Sessions
-        </button>
-        <button
-          type="button"
-          className={activePanel === 'stats' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
-          onClick={() => setActivePanel('stats')}
-        >
-          Statistics
-        </button>
-      </section>
-      <main
-        className={`app-shell__content ${
-          activePanel === 'sessions' || activePanel === 'stats' ? 'app-shell__content--single' : ''
-        }`}
-      >
-        {activePanel === 'both' ? (
-          <GameLibrary
+          {isEmptyDeployment ? (
+            <section className="app-shell__notice">
+              <h2>Deployment is working</h2>
+              <p>
+                The app is live, but this cloud database does not have sample
+                data yet. Add games and sessions manually, or seed Atlas from
+                your local machine with
+                <code>
+                  {' '}
+                  MONGO_URI=&quot;your-atlas-uri&quot; npm run render-seed
+                </code>
+                .
+              </p>
+            </section>
+          ) : null}
+          <Dashboard
             games={games}
+            sessions={allSessions}
             loading={initialLoading}
-            onDataChange={() => handleDataChange(sessionFilters)}
-            onOpenSessionLogging={() => setActivePanel('sessions')}
-            setErrorMessage={setErrorMessage}
           />
-        ) : null}
-        {activePanel !== 'stats' ? (
-          <SessionManager
-            games={games}
-            sessions={sessions}
-            filters={sessionFilters}
-            playerSuggestions={playerSuggestions}
-            loading={initialLoading}
-            refreshing={refreshing}
-            fullWidth={activePanel === 'sessions'}
-            onShowAllPanels={() => setActivePanel('both')}
-            onDataChange={handleDataChange}
-            setErrorMessage={setErrorMessage}
-          />
-        ) : null}
-        {activePanel === 'stats' ? (
-          <StatisticsPage
-            stats={stats}
-            loading={statsLoading}
-            focusedPlayer={focusedStatsPlayer}
-            playerSuggestions={playerSuggestions}
-            onFocusPlayerChange={handleStatsFocusChange}
-          />
-        ) : null}
-      </main>
+          <section className="app-shell__view-switcher">
+            <button
+              type="button"
+              className={
+                activePanel === 'both'
+                  ? 'app-shell__view-button app-shell__view-button--active'
+                  : 'app-shell__view-button'
+              }
+              onClick={() => setActivePanel('both')}
+            >
+              Workspace
+            </button>
+            <button
+              type="button"
+              className={
+                activePanel === 'sessions'
+                  ? 'app-shell__view-button app-shell__view-button--active'
+                  : 'app-shell__view-button'
+              }
+              onClick={() => setActivePanel('sessions')}
+            >
+              Sessions
+            </button>
+            <button
+              type="button"
+              className={
+                activePanel === 'stats'
+                  ? 'app-shell__view-button app-shell__view-button--active'
+                  : 'app-shell__view-button'
+              }
+              onClick={() => setActivePanel('stats')}
+            >
+              Statistics
+            </button>
+          </section>
+          <main
+            className={`app-shell__content ${
+              activePanel === 'sessions' || activePanel === 'stats'
+                ? 'app-shell__content--single'
+                : ''
+            }`}
+          >
+            {activePanel === 'both' ? (
+              <GameLibrary
+                games={games}
+                loading={initialLoading}
+                onDataChange={() => handleDataChange(sessionFilters)}
+                onOpenSessionLogging={() => setActivePanel('sessions')}
+                setErrorMessage={setErrorMessage}
+              />
+            ) : null}
+            {activePanel !== 'stats' ? (
+              <SessionManager
+                games={games}
+                sessions={sessions}
+                filters={sessionFilters}
+                playerSuggestions={playerSuggestions}
+                loading={initialLoading}
+                refreshing={refreshing}
+                fullWidth={activePanel === 'sessions'}
+                onShowAllPanels={() => setActivePanel('both')}
+                onDataChange={handleDataChange}
+                setErrorMessage={setErrorMessage}
+              />
+            ) : null}
+            {activePanel === 'stats' ? (
+              <StatisticsPage
+                stats={stats}
+                loading={statsLoading}
+                focusedPlayer={focusedStatsPlayer}
+                playerSuggestions={playerSuggestions}
+                onFocusPlayerChange={handleStatsFocusChange}
+              />
+            ) : null}
+          </main>
         </>
       )}
     </div>

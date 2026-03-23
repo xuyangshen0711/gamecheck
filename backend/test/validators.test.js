@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { validateGamePayload, validateSessionPayload } from '../src/utils/validators.js';
+import {
+  validateGamePayload,
+  validateSessionPayload,
+} from '../src/utils/validators.js';
 
 test('validateGamePayload rejects invalid player counts', () => {
   const errors = validateGamePayload({

@@ -3,7 +3,11 @@
   font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
   line-height: 1.5;
   background:
-    radial-gradient(circle at top left, rgba(153, 205, 188, 0.28), transparent 28%),
+    radial-gradient(
+      circle at top left,
+      rgba(153, 205, 188, 0.28),
+      transparent 28%
+    ),
     linear-gradient(180deg, #eff6f4, #f7fafc 50%, #edf3f8);
 }
 

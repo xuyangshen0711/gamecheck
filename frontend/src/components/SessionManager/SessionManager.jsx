@@ -99,15 +99,25 @@ function SessionManager({
           <h2>Session Logging</h2>
         </div>
         <div className="panel__heading-actions">
-          {refreshing ? <p className="panel__status">Updating results...</p> : null}
+          {refreshing ? (
+            <p className="panel__status">Updating results...</p>
+          ) : null}
           {fullWidth ? (
-            <button type="button" className="button-secondary" onClick={onShowAllPanels}>
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={onShowAllPanels}
+            >
               Back to All Panels
             </button>
           ) : null}
         </div>
       </div>
-      <SessionFilter games={games} filters={filters} onChange={handleFilterChange} />
+      <SessionFilter
+        games={games}
+        filters={filters}
+        onChange={handleFilterChange}
+      />
       <SessionForm
         games={games}
         initialValues={sessionFormValues}

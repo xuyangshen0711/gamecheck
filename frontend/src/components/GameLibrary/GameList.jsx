@@ -7,7 +7,9 @@ function GameList({ games, loading, onEdit, onDelete }) {
   }
 
   if (games.length === 0) {
-    return <p className="list-state">No games found. Add your first title above.</p>;
+    return (
+      <p className="list-state">No games found. Add your first title above.</p>
+    );
   }
 
   return (
@@ -25,7 +27,11 @@ function GameList({ games, loading, onEdit, onDelete }) {
             <button type="button" onClick={() => onEdit(game)}>
               Edit
             </button>
-            <button type="button" className="button-danger" onClick={() => onDelete(game.id)}>
+            <button
+              type="button"
+              className="button-danger"
+              onClick={() => onDelete(game.id)}
+            >
               Delete
             </button>
           </div>

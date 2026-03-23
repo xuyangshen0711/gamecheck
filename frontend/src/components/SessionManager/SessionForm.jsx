@@ -82,7 +82,12 @@ function SessionForm({
       <div className="form-card__grid">
         <label>
           <span>Game</span>
-          <select name="gameId" value={formValues.gameId} onChange={handleChange} required>
+          <select
+            name="gameId"
+            value={formValues.gameId}
+            onChange={handleChange}
+            required
+          >
             <option value="">Select a game</option>
             {games.map((game) => (
               <option key={game.id} value={game.id}>
@@ -147,11 +152,20 @@ function SessionForm({
       </label>
       <label>
         <span>Notes</span>
-        <textarea name="notes" rows="3" value={formValues.notes} onChange={handleChange} />
+        <textarea
+          name="notes"
+          rows="3"
+          value={formValues.notes}
+          onChange={handleChange}
+        />
       </label>
       <div className="form-card__actions">
         <button type="submit" disabled={submitting || games.length === 0}>
-          {submitting ? 'Saving...' : isEditing ? 'Update Session' : 'Log Session'}
+          {submitting
+            ? 'Saving...'
+            : isEditing
+              ? 'Update Session'
+              : 'Log Session'}
         </button>
         {isEditing ? (
           <button type="button" className="button-secondary" onClick={onCancel}>

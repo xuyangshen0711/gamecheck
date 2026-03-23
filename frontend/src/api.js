@@ -1,5 +1,6 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:4000/api' : '/api');
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV ? 'http://localhost:4000/api' : '/api');
 
 async function request(path, options = {}) {
   const { skipUnauthorizedEvent = false, ...requestOptions } = options;
@@ -22,12 +23,18 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     const message = isJsonResponse
-      ? data.error || data.errors?.join(' ') || `Request failed with status ${response.status}.`
+      ? data.error ||
+        data.errors?.join(' ') ||
+        `Request failed with status ${response.status}.`
       : data.trim() || `Request failed with status ${response.status}.`;
     const error = new Error(message);
     error.status = response.status;
 
-    if (response.status === 401 && !skipUnauthorizedEvent && typeof window !== 'undefined') {
+    if (
+      response.status === 401 &&
+      !skipUnauthorizedEvent &&
+      typeof window !== 'undefined'
+    ) {
       window.dispatchEvent(new CustomEvent('gamecheck:unauthorized'));
     }
 

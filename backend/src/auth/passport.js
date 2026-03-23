@@ -4,20 +4,26 @@ import { connectToDatabase } from '../db/mongo.js';
 import { verifyPassword } from './passwords.js';
 import { findUserById, findUserByUsername, mapUserDocument } from './users.js';
 
-export function configurePassport({ databaseConnector = connectToDatabase } = {}) {
+export function configurePassport({
+  databaseConnector = connectToDatabase,
+} = {}) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
         const user = await findUserByUsername(username, { databaseConnector });
 
         if (!user) {
-          return done(null, false, { message: 'Invalid username or password.' });
+          return done(null, false, {
+            message: 'Invalid username or password.',
+          });
         }
 
         const passwordMatches = await verifyPassword(password, user);
 
         if (!passwordMatches) {
-          return done(null, false, { message: 'Invalid username or password.' });
+          return done(null, false, {
+            message: 'Invalid username or password.',
+          });
         }
 
         return done(null, mapUserDocument(user));

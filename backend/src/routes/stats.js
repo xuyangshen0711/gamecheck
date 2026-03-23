@@ -18,18 +18,20 @@ function compareBySessionDateAscending(left, right) {
 }
 
 function getTopEntry(entries, valueSelector) {
-  return [...entries].sort((left, right) => {
-    const rightValue = valueSelector(right);
-    const leftValue = valueSelector(left);
+  return (
+    [...entries].sort((left, right) => {
+      const rightValue = valueSelector(right);
+      const leftValue = valueSelector(left);
 
-    if (rightValue !== leftValue) {
-      return rightValue - leftValue;
-    }
+      if (rightValue !== leftValue) {
+        return rightValue - leftValue;
+      }
 
-    return String(left.name || left.player || left.label).localeCompare(
-      String(right.name || right.player || right.label)
-    );
-  })[0] || null;
+      return String(left.name || left.player || left.label).localeCompare(
+        String(right.name || right.player || right.label)
+      );
+    })[0] || null
+  );
 }
 
 function buildWinRates(sessions, minimumSessions = 1) {
@@ -38,10 +40,16 @@ function buildWinRates(sessions, minimumSessions = 1) {
 
   sessions.forEach((session) => {
     session.players.forEach((player) => {
-      appearancesByPlayer.set(player, (appearancesByPlayer.get(player) || 0) + 1);
+      appearancesByPlayer.set(
+        player,
+        (appearancesByPlayer.get(player) || 0) + 1
+      );
     });
 
-    winsByPlayer.set(session.winner, (winsByPlayer.get(session.winner) || 0) + 1);
+    winsByPlayer.set(
+      session.winner,
+      (winsByPlayer.get(session.winner) || 0) + 1
+    );
   });
 
   return [...appearancesByPlayer.entries()]
@@ -189,11 +197,19 @@ function buildHeadToHead(sessions, focusPlayer = '') {
     );
 
     for (let index = 0; index < uniquePlayers.length; index += 1) {
-      for (let innerIndex = index + 1; innerIndex < uniquePlayers.length; innerIndex += 1) {
+      for (
+        let innerIndex = index + 1;
+        innerIndex < uniquePlayers.length;
+        innerIndex += 1
+      ) {
         const leftPlayer = uniquePlayers[index];
         const rightPlayer = uniquePlayers[innerIndex];
 
-        if (focusPlayer && leftPlayer !== focusPlayer && rightPlayer !== focusPlayer) {
+        if (
+          focusPlayer &&
+          leftPlayer !== focusPlayer &&
+          rightPlayer !== focusPlayer
+        ) {
           continue;
         }
 
@@ -230,7 +246,11 @@ function buildHeadToHead(sessions, focusPlayer = '') {
       const leftWins = rivalry.wins[leftPlayer];
       const rightWins = rivalry.wins[rightPlayer];
       const leader =
-        leftWins === rightWins ? 'Tied' : leftWins > rightWins ? leftPlayer : rightPlayer;
+        leftWins === rightWins
+          ? 'Tied'
+          : leftWins > rightWins
+            ? leftPlayer
+            : rightPlayer;
 
       return {
         players: rivalry.players,
@@ -249,9 +269,15 @@ function buildHeadToHead(sessions, focusPlayer = '') {
     });
 }
 
-export function buildStatisticsPayload({ gamesCount, sessions, focusPlayer = '' }) {
+export function buildStatisticsPayload({
+  gamesCount,
+  sessions,
+  focusPlayer = '',
+}) {
   const normalizedSessions = [...sessions].sort(compareBySessionDateDescending);
-  const uniquePlayers = new Set(normalizedSessions.flatMap((session) => session.players));
+  const uniquePlayers = new Set(
+    normalizedSessions.flatMap((session) => session.players)
+  );
   const winRates = buildWinRates(normalizedSessions);
   const mostPlayedGames = buildMostPlayedGames(normalizedSessions);
   const streaks = buildPlayerStreaks(normalizedSessions);
@@ -261,7 +287,10 @@ export function buildStatisticsPayload({ gamesCount, sessions, focusPlayer = '' 
     sessionsLogged: normalizedSessions.length,
     playersTracked: uniquePlayers.size,
     latestWinner: normalizedSessions[0]?.winner || null,
-    mostPlayedGame: getTopEntry(mostPlayedGames, (entry) => entry.sessionsPlayed),
+    mostPlayedGame: getTopEntry(
+      mostPlayedGames,
+      (entry) => entry.sessionsPlayed
+    ),
     bestWinRate: getTopEntry(winRates, (entry) => entry.winRate),
     hottestStreak: getTopEntry(
       streaks.current.filter((entry) => entry.streak > 0),
@@ -279,7 +308,9 @@ export function buildStatisticsPayload({ gamesCount, sessions, focusPlayer = '' 
   };
 }
 
-export function createStatsRouter({ databaseConnector = connectToDatabase } = {}) {
+export function createStatsRouter({
+  databaseConnector = connectToDatabase,
+} = {}) {
   const router = express.Router();
 
   router.get('/', async (req, res) => {
@@ -290,7 +321,9 @@ export function createStatsRouter({ databaseConnector = connectToDatabase } = {}
       db.collection('sessions').find({}).sort({ sessionDate: -1 }).toArray(),
     ]);
 
-    return res.json(buildStatisticsPayload({ gamesCount, sessions, focusPlayer }));
+    return res.json(
+      buildStatisticsPayload({ gamesCount, sessions, focusPlayer })
+    );
   });
 
   return router;

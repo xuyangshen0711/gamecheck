@@ -65,7 +65,11 @@ function SessionFilter({ games, filters, onChange }) {
         <button type="button" onClick={handleApplyFilters}>
           Apply Filters
         </button>
-        <button type="button" className="button-secondary" onClick={handleClearFilters}>
+        <button
+          type="button"
+          className="button-secondary"
+          onClick={handleClearFilters}
+        >
           Clear
         </button>
       </div>

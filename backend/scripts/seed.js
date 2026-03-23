@@ -16,21 +16,24 @@ export const curatedGames = [
     category: 'Strategy',
     minPlayers: 3,
     maxPlayers: 4,
-    description: 'Trade resources, expand settlements, and race for victory points.',
+    description:
+      'Trade resources, expand settlements, and race for victory points.',
   },
   {
     name: 'Codenames',
     category: 'Party',
     minPlayers: 4,
     maxPlayers: 8,
-    description: 'Give clever clues and help your team uncover the right words.',
+    description:
+      'Give clever clues and help your team uncover the right words.',
   },
   {
     name: 'Wingspan',
     category: 'Strategy',
     minPlayers: 1,
     maxPlayers: 5,
-    description: 'Build a wildlife preserve and attract birds with unique abilities.',
+    description:
+      'Build a wildlife preserve and attract birds with unique abilities.',
   },
   {
     name: 'Ticket to Ride',
@@ -44,28 +47,32 @@ export const curatedGames = [
     category: 'Cooperative',
     minPlayers: 2,
     maxPlayers: 4,
-    description: 'Work together as disease specialists to stop global outbreaks.',
+    description:
+      'Work together as disease specialists to stop global outbreaks.',
   },
   {
     name: 'Splendor',
     category: 'Engine Building',
     minPlayers: 2,
     maxPlayers: 4,
-    description: 'Gather gem tokens, buy cards, and attract nobles for prestige.',
+    description:
+      'Gather gem tokens, buy cards, and attract nobles for prestige.',
   },
   {
     name: 'Carcassonne',
     category: 'Tile Placement',
     minPlayers: 2,
     maxPlayers: 5,
-    description: 'Place landscape tiles and followers to build a medieval countryside.',
+    description:
+      'Place landscape tiles and followers to build a medieval countryside.',
   },
   {
     name: '7 Wonders',
     category: 'Card Drafting',
     minPlayers: 3,
     maxPlayers: 7,
-    description: 'Draft cards across three ages and build the strongest civilization.',
+    description:
+      'Draft cards across three ages and build the strongest civilization.',
   },
   {
     name: 'Dominion',
@@ -79,7 +86,8 @@ export const curatedGames = [
     category: 'Puzzle',
     minPlayers: 1,
     maxPlayers: 4,
-    description: 'Balance habitats and wildlife tokens in a calm spatial puzzle.',
+    description:
+      'Balance habitats and wildlife tokens in a calm spatial puzzle.',
   },
   {
     name: 'Dixit',
@@ -282,8 +290,12 @@ const defaultNotes = [
 
 function buildPlayers(game, gameIndex, sessionIndex) {
   const minPlayers = Math.max(1, Number(game.minPlayers) || 1);
-  const maxPlayers = Math.max(minPlayers, Math.min(Number(game.maxPlayers) || minPlayers, 6));
-  const playerCount = minPlayers + ((gameIndex + sessionIndex) % (maxPlayers - minPlayers + 1));
+  const maxPlayers = Math.max(
+    minPlayers,
+    Math.min(Number(game.maxPlayers) || minPlayers, 6)
+  );
+  const playerCount =
+    minPlayers + ((gameIndex + sessionIndex) % (maxPlayers - minPlayers + 1));
   const startIndex = (gameIndex * 7 + sessionIndex * 3) % playerPool.length;
   const players = [];
 
@@ -301,11 +313,17 @@ export function buildSessions(games) {
   games.forEach((game, gameIndex) => {
     const notes = notesByCategory[game.category] || defaultNotes;
 
-    for (let sessionIndex = 0; sessionIndex < SESSIONS_PER_GAME; sessionIndex += 1) {
+    for (
+      let sessionIndex = 0;
+      sessionIndex < SESSIONS_PER_GAME;
+      sessionIndex += 1
+    ) {
       const players = buildPlayers(game, gameIndex, sessionIndex);
       const winner = players[(gameIndex + sessionIndex * 2) % players.length];
       const sessionDate = new Date(baseDate);
-      sessionDate.setUTCDate(baseDate.getUTCDate() + gameIndex * SESSIONS_PER_GAME + sessionIndex);
+      sessionDate.setUTCDate(
+        baseDate.getUTCDate() + gameIndex * SESSIONS_PER_GAME + sessionIndex
+      );
 
       sessions.push({
         gameId: game._id.toString(),
@@ -339,7 +357,10 @@ export async function seed() {
   }));
 
   await gamesCollection.insertMany(gamesToInsert);
-  const insertedGames = await gamesCollection.find({}).sort({ name: 1 }).toArray();
+  const insertedGames = await gamesCollection
+    .find({})
+    .sort({ name: 1 })
+    .toArray();
   const sessions = buildSessions(insertedGames);
 
   await sessionsCollection.insertMany(sessions);
@@ -349,7 +370,10 @@ export async function seed() {
   await closeDatabase();
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
   seed().catch(async (error) => {
     console.error('Failed to seed database.', error);
     await closeDatabase();

@@ -37,7 +37,10 @@ function AuthPanel({ submitting, errorMessage, onAuthenticate }) {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (mode === 'register' && formValues.password !== formValues.confirmPassword) {
+    if (
+      mode === 'register' &&
+      formValues.password !== formValues.confirmPassword
+    ) {
       setLocalError('Passwords do not match.');
       return;
     }
@@ -57,22 +60,30 @@ function AuthPanel({ submitting, errorMessage, onAuthenticate }) {
         <p className="auth-panel__eyebrow">Passport Authentication</p>
         <h2>Sign in to manage your game library</h2>
         <p>
-          This project now protects the workspace with a Passport local strategy and a persistent
-          server-side session.
+          This project now protects the workspace with a Passport local strategy
+          and a persistent server-side session.
         </p>
       </div>
       <div className="auth-panel__card">
         <div className="auth-panel__tabs">
           <button
             type="button"
-            className={mode === 'login' ? 'auth-panel__tab auth-panel__tab--active' : 'auth-panel__tab'}
+            className={
+              mode === 'login'
+                ? 'auth-panel__tab auth-panel__tab--active'
+                : 'auth-panel__tab'
+            }
             onClick={() => switchMode('login')}
           >
             Sign In
           </button>
           <button
             type="button"
-            className={mode === 'register' ? 'auth-panel__tab auth-panel__tab--active' : 'auth-panel__tab'}
+            className={
+              mode === 'register'
+                ? 'auth-panel__tab auth-panel__tab--active'
+                : 'auth-panel__tab'
+            }
             onClick={() => switchMode('register')}
           >
             Register
@@ -93,7 +104,9 @@ function AuthPanel({ submitting, errorMessage, onAuthenticate }) {
           <label>
             <span>Password</span>
             <input
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              autoComplete={
+                mode === 'login' ? 'current-password' : 'new-password'
+              }
               name="password"
               type="password"
               value={formValues.password}
@@ -116,7 +129,9 @@ function AuthPanel({ submitting, errorMessage, onAuthenticate }) {
               />
             </label>
           ) : null}
-          {visibleError ? <p className="auth-panel__error">{visibleError}</p> : null}
+          {visibleError ? (
+            <p className="auth-panel__error">{visibleError}</p>
+          ) : null}
           <button type="submit" disabled={submitting}>
             {submitLabel}
           </button>

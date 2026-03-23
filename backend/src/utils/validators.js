@@ -17,7 +17,9 @@ export function validateGamePayload(payload) {
   }
 
   if (!Number.isInteger(maxPlayers) || maxPlayers < minPlayers) {
-    errors.push('Maximum players must be an integer greater than or equal to minimum players.');
+    errors.push(
+      'Maximum players must be an integer greater than or equal to minimum players.'
+    );
   }
 
   return errors;
@@ -42,7 +44,10 @@ export function validateSessionPayload(payload) {
     ? payload.players.map((player) => player.trim()).filter(Boolean)
     : [];
 
-  if (normalizedPlayers.length !== new Set(normalizedPlayers.map((player) => player.toLowerCase())).size) {
+  if (
+    normalizedPlayers.length !==
+    new Set(normalizedPlayers.map((player) => player.toLowerCase())).size
+  ) {
     errors.push('Player names must be unique within a session.');
   }
 

@@ -21,7 +21,9 @@ function mapSessionDocument(document) {
   };
 }
 
-export function createSessionsRouter({ databaseConnector = connectToDatabase } = {}) {
+export function createSessionsRouter({
+  databaseConnector = connectToDatabase,
+} = {}) {
   const router = express.Router();
 
   router.get('/', async (req, res) => {
@@ -62,14 +64,20 @@ export function createSessionsRouter({ databaseConnector = connectToDatabase } =
       return res.status(400).json({ errors: ['Selected game id is invalid.'] });
     }
 
-    const game = await db.collection('games').findOne({ _id: new ObjectId(req.body.gameId) });
+    const game = await db
+      .collection('games')
+      .findOne({ _id: new ObjectId(req.body.gameId) });
 
     if (!game) {
-      return res.status(400).json({ errors: ['Selected game does not exist.'] });
+      return res
+        .status(400)
+        .json({ errors: ['Selected game does not exist.'] });
     }
 
     const now = new Date();
-    const normalizedPlayers = req.body.players.map((player) => player.trim()).filter(Boolean);
+    const normalizedPlayers = req.body.players
+      .map((player) => player.trim())
+      .filter(Boolean);
     const winner = req.body.winner.trim();
     const document = {
       gameId: req.body.gameId,
@@ -83,7 +91,9 @@ export function createSessionsRouter({ databaseConnector = connectToDatabase } =
     };
 
     const result = await db.collection('sessions').insertOne(document);
-    const createdSession = await db.collection('sessions').findOne({ _id: result.insertedId });
+    const createdSession = await db
+      .collection('sessions')
+      .findOne({ _id: result.insertedId });
     return res.status(201).json(mapSessionDocument(createdSession));
   });
 
@@ -104,13 +114,19 @@ export function createSessionsRouter({ databaseConnector = connectToDatabase } =
       return res.status(400).json({ errors: ['Selected game id is invalid.'] });
     }
 
-    const game = await db.collection('games').findOne({ _id: new ObjectId(req.body.gameId) });
+    const game = await db
+      .collection('games')
+      .findOne({ _id: new ObjectId(req.body.gameId) });
 
     if (!game) {
-      return res.status(400).json({ errors: ['Selected game does not exist.'] });
+      return res
+        .status(400)
+        .json({ errors: ['Selected game does not exist.'] });
     }
 
-    const normalizedPlayers = req.body.players.map((player) => player.trim()).filter(Boolean);
+    const normalizedPlayers = req.body.players
+      .map((player) => player.trim())
+      .filter(Boolean);
     const winner = req.body.winner.trim();
     const sessionObjectId = new ObjectId(req.params.sessionId);
     const result = await db.collection('sessions').updateOne(
@@ -132,7 +148,9 @@ export function createSessionsRouter({ databaseConnector = connectToDatabase } =
       return res.status(404).json({ error: 'Session not found.' });
     }
 
-    const updatedSession = await db.collection('sessions').findOne({ _id: sessionObjectId });
+    const updatedSession = await db
+      .collection('sessions')
+      .findOne({ _id: sessionObjectId });
     return res.json(mapSessionDocument(updatedSession));
   });
 

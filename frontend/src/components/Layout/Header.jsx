@@ -10,12 +10,20 @@ function Header({ currentUser, onLogout, logoutPending }) {
       </div>
       <div className="header__meta">
         <p className="header__summary">
-          Track your game library, log each session, and keep a reliable history of game nights.
+          Track your game library, log each session, and keep a reliable history
+          of game nights.
         </p>
         {currentUser ? (
           <div className="header__auth">
-            <p className="header__user">Signed in as <strong>{currentUser.username}</strong></p>
-            <button type="button" className="button-secondary" onClick={onLogout} disabled={logoutPending}>
+            <p className="header__user">
+              Signed in as <strong>{currentUser.username}</strong>
+            </p>
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={onLogout}
+              disabled={logoutPending}
+            >
               {logoutPending ? 'Signing out...' : 'Sign Out'}
             </button>
           </div>

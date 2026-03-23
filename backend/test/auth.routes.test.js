@@ -23,18 +23,25 @@ function createFakeDatabase({ users = [] } = {}) {
         async findOne(query) {
           if (query._id) {
             return (
-              userDocuments.find((user) => user._id.toString() === query._id.toString()) || null
+              userDocuments.find(
+                (user) => user._id.toString() === query._id.toString()
+              ) || null
             );
           }
 
           if (query.username) {
-            return userDocuments.find((user) => user.username === query.username) || null;
+            return (
+              userDocuments.find((user) => user.username === query.username) ||
+              null
+            );
           }
 
           return null;
         },
         async insertOne(document) {
-          const existingUser = userDocuments.find((user) => user.username === document.username);
+          const existingUser = userDocuments.find(
+            (user) => user.username === document.username
+          );
 
           if (existingUser) {
             const error = new Error('Duplicate username.');

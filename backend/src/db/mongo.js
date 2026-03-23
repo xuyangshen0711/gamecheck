@@ -6,7 +6,9 @@ let databasePromise;
 
 export async function connectToDatabase() {
   if (!databasePromise) {
-    databasePromise = client.connect().then((connectedClient) => connectedClient.db(env.mongoDbName));
+    databasePromise = client
+      .connect()
+      .then((connectedClient) => connectedClient.db(env.mongoDbName));
   }
 
   return databasePromise;

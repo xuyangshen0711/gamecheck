@@ -30,7 +30,11 @@ router.get('/', async (req, res) => {
       }
     : {};
 
-  const games = await db.collection('games').find(query).sort({ name: 1 }).toArray();
+  const games = await db
+    .collection('games')
+    .find(query)
+    .sort({ name: 1 })
+    .toArray();
   return res.json(games.map(mapGameDocument));
 });
 
@@ -54,7 +58,9 @@ router.post('/', async (req, res) => {
 
   const db = await connectToDatabase();
   const result = await db.collection('games').insertOne(document);
-  const createdGame = await db.collection('games').findOne({ _id: result.insertedId });
+  const createdGame = await db
+    .collection('games')
+    .findOne({ _id: result.insertedId });
   return res.status(201).json(mapGameDocument(createdGame));
 });
 
@@ -90,7 +96,9 @@ router.put('/:gameId', async (req, res) => {
     return res.status(404).json({ error: 'Game not found.' });
   }
 
-  const updatedGame = await db.collection('games').findOne({ _id: gameObjectId });
+  const updatedGame = await db
+    .collection('games')
+    .findOne({ _id: gameObjectId });
   return res.json(mapGameDocument(updatedGame));
 });
 
@@ -101,11 +109,14 @@ router.delete('/:gameId', async (req, res) => {
 
   const db = await connectToDatabase();
   const gameObjectId = new ObjectId(req.params.gameId);
-  const sessionsCount = await db.collection('sessions').countDocuments({ gameId: req.params.gameId });
+  const sessionsCount = await db
+    .collection('sessions')
+    .countDocuments({ gameId: req.params.gameId });
 
   if (sessionsCount > 0) {
     return res.status(400).json({
-      error: 'This game is referenced by existing sessions and cannot be deleted yet.',
+      error:
+        'This game is referenced by existing sessions and cannot be deleted yet.',
     });
   }
 

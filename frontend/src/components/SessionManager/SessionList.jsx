@@ -26,7 +26,11 @@ function SessionList({ sessions, loading, onEdit, onDelete }) {
             <button type="button" onClick={() => onEdit(session)}>
               Edit
             </button>
-            <button type="button" className="button-danger" onClick={() => onDelete(session.id)}>
+            <button
+              type="button"
+              className="button-danger"
+              onClick={() => onDelete(session.id)}
+            >
               Delete
             </button>
           </div>

@@ -20,7 +20,14 @@ function MetricCard({ label, value, detail }) {
   );
 }
 
-function RankedList({ title, subtitle, emptyMessage, items, renderValue, renderMeta }) {
+function RankedList({
+  title,
+  subtitle,
+  emptyMessage,
+  items,
+  renderValue,
+  renderMeta,
+}) {
   return (
     <section className="statistics-page__panel">
       <div className="statistics-page__section-heading">
@@ -34,7 +41,10 @@ function RankedList({ title, subtitle, emptyMessage, items, renderValue, renderM
       ) : (
         <div className="statistics-page__rankings">
           {items.map((item, index) => (
-            <article className="statistics-page__ranking-card" key={item.player || item.name}>
+            <article
+              className="statistics-page__ranking-card"
+              key={item.player || item.name}
+            >
               <div className="statistics-page__ranking-order">#{index + 1}</div>
               <div>
                 <h4>{item.player || item.name}</h4>
@@ -49,14 +59,22 @@ function RankedList({ title, subtitle, emptyMessage, items, renderValue, renderM
   );
 }
 
-function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFocusPlayerChange }) {
+function StatisticsPage({
+  stats,
+  loading,
+  focusedPlayer,
+  playerSuggestions,
+  onFocusPlayerChange,
+}) {
   const dashboard = stats?.dashboard;
   const winRates = stats?.winRates.slice(0, 5) || [];
   const mostPlayedGames = stats?.mostPlayedGames.slice(0, 5) || [];
   const currentStreaks =
-    stats?.streaks.current.filter((entry) => entry.streak > 0).slice(0, 5) || [];
+    stats?.streaks.current.filter((entry) => entry.streak > 0).slice(0, 5) ||
+    [];
   const longestStreaks =
-    stats?.streaks.longest.filter((entry) => entry.streak > 0).slice(0, 5) || [];
+    stats?.streaks.longest.filter((entry) => entry.streak > 0).slice(0, 5) ||
+    [];
   const headToHead = stats?.headToHead.slice(0, 6) || [];
 
   return (
@@ -68,7 +86,10 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
         </div>
         <label className="statistics-page__focus-filter">
           <span>Head-to-head spotlight</span>
-          <select value={focusedPlayer} onChange={(event) => onFocusPlayerChange(event.target.value)}>
+          <select
+            value={focusedPlayer}
+            onChange={(event) => onFocusPlayerChange(event.target.value)}
+          >
             <option value="">All players</option>
             {playerSuggestions.map((player) => (
               <option key={player} value={player}>
@@ -82,31 +103,35 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
       <div className="statistics-page__hero">
         <div className="statistics-page__hero-copy">
           <p className="statistics-page__eyebrow">Proposal Scope</p>
-          <h3>Win rates, rivalries, streaks, and the shape of your game nights</h3>
+          <h3>
+            Win rates, rivalries, streaks, and the shape of your game nights
+          </h3>
           <p>
-            This view turns raw session logs into player history, most-played games, streak
-            tracking, and head-to-head matchups.
+            This view turns raw session logs into player history, most-played
+            games, streak tracking, and head-to-head matchups.
           </p>
         </div>
         <div className="statistics-page__metrics">
           <MetricCard
             label="Games tracked"
-            value={loading ? '...' : dashboard?.gamesTracked ?? 0}
+            value={loading ? '...' : (dashboard?.gamesTracked ?? 0)}
             detail="Titles with library records"
           />
           <MetricCard
             label="Sessions logged"
-            value={loading ? '...' : dashboard?.sessionsLogged ?? 0}
+            value={loading ? '...' : (dashboard?.sessionsLogged ?? 0)}
             detail="All recorded play sessions"
           />
           <MetricCard
             label="Players tracked"
-            value={loading ? '...' : dashboard?.playersTracked ?? 0}
+            value={loading ? '...' : (dashboard?.playersTracked ?? 0)}
             detail="Unique players in session history"
           />
           <MetricCard
             label="Latest winner"
-            value={loading ? '...' : dashboard?.latestWinner || 'No sessions yet'}
+            value={
+              loading ? '...' : dashboard?.latestWinner || 'No sessions yet'
+            }
             detail="Most recent champion on record"
           />
         </div>
@@ -115,7 +140,11 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
       <div className="statistics-page__insights">
         <article className="statistics-page__spotlight-card">
           <span>Most Played Game</span>
-          <strong>{loading ? '...' : dashboard?.mostPlayedGame?.name || 'No sessions yet'}</strong>
+          <strong>
+            {loading
+              ? '...'
+              : dashboard?.mostPlayedGame?.name || 'No sessions yet'}
+          </strong>
           <p>
             {loading
               ? ''
@@ -126,7 +155,9 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
         </article>
         <article className="statistics-page__spotlight-card">
           <span>Best Win Rate</span>
-          <strong>{loading ? '...' : dashboard?.bestWinRate?.player || 'No data yet'}</strong>
+          <strong>
+            {loading ? '...' : dashboard?.bestWinRate?.player || 'No data yet'}
+          </strong>
           <p>
             {loading
               ? ''
@@ -137,7 +168,11 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
         </article>
         <article className="statistics-page__spotlight-card">
           <span>Current Hottest Streak</span>
-          <strong>{loading ? '...' : dashboard?.hottestStreak?.player || 'No streak yet'}</strong>
+          <strong>
+            {loading
+              ? '...'
+              : dashboard?.hottestStreak?.player || 'No streak yet'}
+          </strong>
           <p>
             {loading
               ? ''
@@ -151,7 +186,8 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
           <strong>
             {loading
               ? '...'
-              : dashboard?.busiestRivalry?.players.join(' vs ') || 'No rivalry yet'}
+              : dashboard?.busiestRivalry?.players.join(' vs ') ||
+                'No rivalry yet'}
           </strong>
           <p>
             {loading
@@ -170,7 +206,9 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
           emptyMessage="No player records yet."
           items={winRates}
           renderValue={(item) => formatPercentage(item.winRate)}
-          renderMeta={(item) => `${item.wins} wins in ${item.appearances} appearances`}
+          renderMeta={(item) =>
+            `${item.wins} wins in ${item.appearances} appearances`
+          }
         />
         <RankedList
           title="Most-Played Games"
@@ -186,7 +224,9 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
           emptyMessage="No active streaks yet."
           items={currentStreaks}
           renderValue={(item) => `${item.streak} wins`}
-          renderMeta={(item) => `Latest appearance: ${item.latestAppearanceDate}`}
+          renderMeta={(item) =>
+            `Latest appearance: ${item.latestAppearanceDate}`
+          }
         />
         <RankedList
           title="Longest Streaks"

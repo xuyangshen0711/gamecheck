@@ -17,7 +17,9 @@ function createFakeDatabase({ games = [], sessions = [] } = {}) {
             }
 
             return (
-              gameDocuments.find((game) => game._id.toString() === query._id.toString()) || null
+              gameDocuments.find(
+                (game) => game._id.toString() === query._id.toString()
+              ) || null
             );
           },
         };
@@ -66,8 +68,9 @@ function createFakeDatabase({ games = [], sessions = [] } = {}) {
           },
           async findOne(query) {
             return (
-              sessionDocuments.find((session) => session._id.toString() === query._id.toString()) ||
-              null
+              sessionDocuments.find(
+                (session) => session._id.toString() === query._id.toString()
+              ) || null
             );
           },
           async updateOne(query, update) {
@@ -114,7 +117,10 @@ function getRouteHandler(router, method, path) {
   return routeLayer.route.stack[0].handle;
 }
 
-async function invokeRoute(handler, { body = {}, params = {}, query = {} } = {}) {
+async function invokeRoute(
+  handler,
+  { body = {}, params = {}, query = {} } = {}
+) {
   const req = {
     body,
     params,

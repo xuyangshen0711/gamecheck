@@ -14,7 +14,13 @@ const emptyGame = {
   description: '',
 };
 
-function GameLibrary({ games, loading, onDataChange, onOpenSessionLogging, setErrorMessage }) {
+function GameLibrary({
+  games,
+  loading,
+  onDataChange,
+  onOpenSessionLogging,
+  setErrorMessage,
+}) {
   const [searchValue, setSearchValue] = useState('');
   const [editingGame, setEditingGame] = useState(null);
   const [submitting, setSubmitting] = useState(false);

@@ -97,10 +97,15 @@ function pickWinner(players) {
 
 function buildSession(game, index) {
   const minPlayers = Math.max(2, Number(game.minPlayers) || 2);
-  const maxPlayers = Math.max(minPlayers, Number(game.maxPlayers) || minPlayers);
+  const maxPlayers = Math.max(
+    minPlayers,
+    Number(game.maxPlayers) || minPlayers
+  );
   const players = pickUniquePlayers(minPlayers, Math.min(maxPlayers, 6));
   const winner = pickWinner(players);
-  const sessionDate = new Date(2026, 1 + randomInt(2), 1 + randomInt(28)).toISOString().slice(0, 10);
+  const sessionDate = new Date(2026, 1 + randomInt(2), 1 + randomInt(28))
+    .toISOString()
+    .slice(0, 10);
 
   return {
     gameId: game._id.toString(),
@@ -132,14 +137,18 @@ async function seedStatsSample() {
     games = await gamesCollection.find({}).toArray();
   }
 
-  const targetGames = [...games].sort(() => Math.random() - 0.5).slice(0, Math.min(games.length, 6));
+  const targetGames = [...games]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, Math.min(games.length, 6));
   const sessions = Array.from({ length: 24 }, (_, index) => {
     const game = targetGames[index % targetGames.length];
     return buildSession(game, index);
   });
 
   await sessionsCollection.insertMany(sessions);
-  console.log(`Inserted ${sessions.length} sample sessions across ${targetGames.length} games.`);
+  console.log(
+    `Inserted ${sessions.length} sample sessions across ${targetGames.length} games.`
+  );
 }
 
 seedStatsSample()

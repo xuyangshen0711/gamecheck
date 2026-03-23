@@ -19,12 +19,19 @@ export function mapUserDocument(document) {
   };
 }
 
-export async function ensureUserIndexes({ databaseConnector = connectToDatabase } = {}) {
+export async function ensureUserIndexes({
+  databaseConnector = connectToDatabase,
+} = {}) {
   const db = await databaseConnector();
-  await db.collection(COLLECTION_NAME).createIndex({ username: 1 }, { unique: true });
+  await db
+    .collection(COLLECTION_NAME)
+    .createIndex({ username: 1 }, { unique: true });
 }
 
-export async function findUserById(userId, { databaseConnector = connectToDatabase } = {}) {
+export async function findUserById(
+  userId,
+  { databaseConnector = connectToDatabase } = {}
+) {
   if (!ObjectId.isValid(userId)) {
     return null;
   }
@@ -33,7 +40,10 @@ export async function findUserById(userId, { databaseConnector = connectToDataba
   return db.collection(COLLECTION_NAME).findOne({ _id: new ObjectId(userId) });
 }
 
-export async function findUserByUsername(username, { databaseConnector = connectToDatabase } = {}) {
+export async function findUserByUsername(
+  username,
+  { databaseConnector = connectToDatabase } = {}
+) {
   const normalizedUsername = normalizeUsername(username);
 
   if (!normalizedUsername) {
@@ -41,7 +51,9 @@ export async function findUserByUsername(username, { databaseConnector = connect
   }
 
   const db = await databaseConnector();
-  return db.collection(COLLECTION_NAME).findOne({ username: normalizedUsername });
+  return db
+    .collection(COLLECTION_NAME)
+    .findOne({ username: normalizedUsername });
 }
 
 export async function createUser(

@@ -20,15 +20,21 @@ function validateCredentials({ username = '', password = '' }) {
   const errors = [];
 
   if (normalizedUsername.length < MIN_USERNAME_LENGTH) {
-    errors.push(`Username must be at least ${MIN_USERNAME_LENGTH} characters long.`);
+    errors.push(
+      `Username must be at least ${MIN_USERNAME_LENGTH} characters long.`
+    );
   }
 
   if (!/^[a-z0-9._-]+$/i.test(normalizedUsername)) {
-    errors.push('Username may only include letters, numbers, periods, underscores, and hyphens.');
+    errors.push(
+      'Username may only include letters, numbers, periods, underscores, and hyphens.'
+    );
   }
 
   if (trimmedPassword.length < MIN_PASSWORD_LENGTH) {
-    errors.push(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`);
+    errors.push(
+      `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`
+    );
   }
 
   return errors;
@@ -38,7 +44,9 @@ function respondWithUser(res, user, statusCode = 200) {
   return res.status(statusCode).json({ user: mapUserDocument(user) });
 }
 
-export function createAuthRouter({ databaseConnector = connectToDatabase } = {}) {
+export function createAuthRouter({
+  databaseConnector = connectToDatabase,
+} = {}) {
   const router = express.Router();
 
   router.get('/me', (req, res) => {
@@ -55,13 +63,19 @@ export function createAuthRouter({ databaseConnector = connectToDatabase } = {})
     try {
       await ensureUserIndexes({ databaseConnector });
 
-      const existingUser = await findUserByUsername(req.body.username, { databaseConnector });
+      const existingUser = await findUserByUsername(req.body.username, {
+        databaseConnector,
+      });
 
       if (existingUser) {
-        return res.status(409).json({ error: 'That username is already in use.' });
+        return res
+          .status(409)
+          .json({ error: 'That username is already in use.' });
       }
 
-      const passwordDigest = await createPasswordDigest(req.body.password.trim());
+      const passwordDigest = await createPasswordDigest(
+        req.body.password.trim()
+      );
       const createdUser = await createUser(
         {
           username: req.body.username,
@@ -79,7 +93,9 @@ export function createAuthRouter({ databaseConnector = connectToDatabase } = {})
       });
     } catch (error) {
       if (error.code === 11000) {
-        return res.status(409).json({ error: 'That username is already in use.' });
+        return res
+          .status(409)
+          .json({ error: 'That username is already in use.' });
       }
 
       return next(error);
@@ -93,7 +109,9 @@ export function createAuthRouter({ databaseConnector = connectToDatabase } = {})
       }
 
       if (!user) {
-        return res.status(401).json({ error: info?.message || 'Invalid username or password.' });
+        return res
+          .status(401)
+          .json({ error: info?.message || 'Invalid username or password.' });
       }
 
       return req.logIn(user, (loginError) => {

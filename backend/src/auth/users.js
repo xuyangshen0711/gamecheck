@@ -1,6 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { connectToDatabase } from '../db/mongo.js';
 
+const COLLECTION_NAME = 'users';
+
 export function normalizeUsername(username = '') {
   return username.trim().toLowerCase();
 }
@@ -19,7 +21,7 @@ export function mapUserDocument(document) {
 
 export async function ensureUserIndexes({ databaseConnector = connectToDatabase } = {}) {
   const db = await databaseConnector();
-  await db.collection('users').createIndex({ username: 1 }, { unique: true });
+  await db.collection(COLLECTION_NAME).createIndex({ username: 1 }, { unique: true });
 }
 
 export async function findUserById(userId, { databaseConnector = connectToDatabase } = {}) {
@@ -28,7 +30,7 @@ export async function findUserById(userId, { databaseConnector = connectToDataba
   }
 
   const db = await databaseConnector();
-  return db.collection('users').findOne({ _id: new ObjectId(userId) });
+  return db.collection(COLLECTION_NAME).findOne({ _id: new ObjectId(userId) });
 }
 
 export async function findUserByUsername(username, { databaseConnector = connectToDatabase } = {}) {
@@ -39,7 +41,7 @@ export async function findUserByUsername(username, { databaseConnector = connect
   }
 
   const db = await databaseConnector();
-  return db.collection('users').findOne({ username: normalizedUsername });
+  return db.collection(COLLECTION_NAME).findOne({ username: normalizedUsername });
 }
 
 export async function createUser(
@@ -55,6 +57,6 @@ export async function createUser(
     createdAt: now,
     updatedAt: now,
   };
-  const result = await db.collection('users').insertOne(document);
+  const result = await db.collection(COLLECTION_NAME).insertOne(document);
   return { ...document, _id: result.insertedId };
 }

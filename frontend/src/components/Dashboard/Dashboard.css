@@ -12,6 +12,7 @@
   display: grid;
   gap: 0.4rem;
   padding: 1.25rem;
+  transition: all 0.2s ease;
 }
 
 .dashboard__card strong {
@@ -26,13 +27,28 @@
 }
 
 .dashboard__label {
+  align-items: center;
   color: #5a7082;
+  display: inline-flex;
   font-size: 0.95rem;
+  gap: 0.45rem;
+}
+
+.dashboard__icon {
+  font-size: 1.2em;
 }
 
 .dashboard__value--compact {
   font-size: 1.35rem;
   line-height: 1.3;
+}
+
+.dashboard__empty-state {
+  color: var(--color-text-muted);
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0.25rem 0 0;
+  text-align: center;
 }
 
 @media (max-width: 900px) {

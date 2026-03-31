@@ -270,81 +270,84 @@ function App() {
       ) : null}
       {authLoading || !currentUser ? null : (
         <>
-      {isEmptyDeployment ? (
-        <section className="app-shell__notice">
-          <h2>Deployment is working</h2>
-          <p>
-            The app is live, but this cloud database does not have sample data yet. Add games and
-            sessions manually, or seed Atlas from your local machine with
-            <code> MONGO_URI=&quot;your-atlas-uri&quot; npm run render-seed</code>.
-          </p>
-        </section>
-      ) : null}
-      <Dashboard games={games} sessions={allSessions} loading={initialLoading} />
-      <nav aria-label="View navigation" className="app-shell__view-switcher">
-        <button
-          type="button"
-          aria-pressed={activePanel === 'both'}
-          className={activePanel === 'both' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
-          onClick={() => setActivePanel('both')}
-        >
-          Workspace
-        </button>
-        <button
-          type="button"
-          aria-pressed={activePanel === 'sessions'}
-          className={activePanel === 'sessions' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
-          onClick={() => setActivePanel('sessions')}
-        >
-          Sessions
-        </button>
-        <button
-          type="button"
-          aria-pressed={activePanel === 'stats'}
-          className={activePanel === 'stats' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
-          onClick={() => setActivePanel('stats')}
-        >
-          Statistics
-        </button>
-      </nav>
-      <main
-        className={`app-shell__content ${
-          activePanel === 'sessions' || activePanel === 'stats' ? 'app-shell__content--single' : ''
-        }`}
-      >
-        {activePanel === 'both' ? (
-          <GameLibrary
-            games={games}
-            loading={initialLoading}
-            onDataChange={() => handleDataChange(sessionFilters)}
-            onOpenSessionLogging={() => setActivePanel('sessions')}
-            setErrorMessage={setErrorMessage}
-          />
-        ) : null}
-        {activePanel !== 'stats' ? (
-          <SessionManager
-            games={games}
-            sessions={sessions}
-            filters={sessionFilters}
-            playerSuggestions={playerSuggestions}
-            loading={initialLoading}
-            refreshing={refreshing}
-            fullWidth={activePanel === 'sessions'}
-            onShowAllPanels={() => setActivePanel('both')}
-            onDataChange={handleDataChange}
-            setErrorMessage={setErrorMessage}
-          />
-        ) : null}
-        {activePanel === 'stats' ? (
-          <StatisticsPage
-            stats={stats}
-            loading={statsLoading}
-            focusedPlayer={focusedStatsPlayer}
-            playerSuggestions={playerSuggestions}
-            onFocusPlayerChange={handleStatsFocusChange}
-          />
-        ) : null}
-      </main>
+          {isEmptyDeployment ? (
+            <section className="app-shell__notice">
+              <h2>Deployment is working</h2>
+              <p>
+                The app is live, but this cloud database does not have sample data yet. Add games and
+                sessions manually, or seed Atlas from your local machine with
+                <code> MONGO_URI=&quot;your-atlas-uri&quot; npm run render-seed</code>.
+              </p>
+            </section>
+          ) : null}
+          <Dashboard games={games} sessions={allSessions} loading={initialLoading} />
+          <nav aria-label="View navigation" className="app-shell__view-switcher">
+            <button
+              type="button"
+              aria-pressed={activePanel === 'both'}
+              className={activePanel === 'both' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
+              onClick={() => setActivePanel('both')}
+            >
+              Workspace
+            </button>
+            <button
+              type="button"
+              aria-pressed={activePanel === 'sessions'}
+              className={activePanel === 'sessions' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
+              onClick={() => setActivePanel('sessions')}
+            >
+              Sessions
+            </button>
+            <button
+              type="button"
+              aria-pressed={activePanel === 'stats'}
+              className={activePanel === 'stats' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
+              onClick={() => setActivePanel('stats')}
+            >
+              Statistics
+            </button>
+          </nav>
+          <main>
+            <div
+              key={activePanel}
+              className={`app-shell__content ${
+                activePanel === 'sessions' || activePanel === 'stats' ? 'app-shell__content--single' : ''
+              }`}
+            >
+              {activePanel === 'both' ? (
+                <GameLibrary
+                  games={games}
+                  loading={initialLoading}
+                  onDataChange={() => handleDataChange(sessionFilters)}
+                  onOpenSessionLogging={() => setActivePanel('sessions')}
+                  setErrorMessage={setErrorMessage}
+                />
+              ) : null}
+              {activePanel !== 'stats' ? (
+                <SessionManager
+                  games={games}
+                  sessions={sessions}
+                  filters={sessionFilters}
+                  playerSuggestions={playerSuggestions}
+                  loading={initialLoading}
+                  refreshing={refreshing}
+                  fullWidth={activePanel === 'sessions'}
+                  onShowAllPanels={() => setActivePanel('both')}
+                  onDataChange={handleDataChange}
+                  setErrorMessage={setErrorMessage}
+                />
+              ) : null}
+              {activePanel === 'stats' ? (
+                <StatisticsPage
+                  stats={stats}
+                  loading={statsLoading}
+                  focusedPlayer={focusedStatsPlayer}
+                  playerSuggestions={playerSuggestions}
+                  onFocusPlayerChange={handleStatsFocusChange}
+                />
+              ) : null}
+            </div>
+          </main>
         </>
       )}
     </div>

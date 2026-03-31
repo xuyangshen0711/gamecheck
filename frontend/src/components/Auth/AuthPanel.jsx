@@ -53,31 +53,11 @@ function AuthPanel({ submitting, errorMessage, onAuthenticate }) {
 
   return (
     <section className="auth-panel">
-      <div className="auth-panel__intro">
-        <p className="auth-panel__eyebrow">Passport Authentication</p>
-        <h2>Sign in to manage your game library</h2>
-        <p>
-          This project now protects the workspace with a Passport local strategy and a persistent
-          server-side session.
-        </p>
-      </div>
       <div className="auth-panel__card">
-        <div className="auth-panel__tabs">
-          <button
-            type="button"
-            className={mode === 'login' ? 'auth-panel__tab auth-panel__tab--active' : 'auth-panel__tab'}
-            onClick={() => switchMode('login')}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            className={mode === 'register' ? 'auth-panel__tab auth-panel__tab--active' : 'auth-panel__tab'}
-            onClick={() => switchMode('register')}
-          >
-            Register
-          </button>
-        </div>
+        <img src="/gamecheck-logo.png" alt="GameCheck logo" className="auth-panel__logo" />
+        <p className="auth-panel__eyebrow">Passport Authentication</p>
+        <h2>{mode === 'login' ? 'Welcome back' : 'Create your account'}</h2>
+        <p className="auth-panel__subtitle">Sign in to manage your game library</p>
         <form className="auth-panel__form" onSubmit={handleSubmit}>
           <label>
             <span>Username</span>
@@ -121,6 +101,17 @@ function AuthPanel({ submitting, errorMessage, onAuthenticate }) {
             {submitLabel}
           </button>
         </form>
+        <div className="auth-panel__divider" aria-hidden="true" />
+        <p className="auth-panel__switch-text">
+          {mode === 'login' ? 'New here?' : 'Already have an account?'}
+        </p>
+        <button
+          type="button"
+          className="auth-panel__switch-button"
+          onClick={() => switchMode(mode === 'login' ? 'register' : 'login')}
+        >
+          {mode === 'login' ? 'Register' : 'Back to Sign In'}
+        </button>
       </div>
     </section>
   );

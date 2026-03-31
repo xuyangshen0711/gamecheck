@@ -1,13 +1,22 @@
 import PropTypes from 'prop-types';
 import './SessionList.css';
 
-function SessionList({ sessions, loading, onEdit, onDelete }) {
+function SessionList({ sessions, loading, hasActiveFilters, onEdit, onDelete }) {
   if (loading) {
     return <p className="list-state">Loading sessions...</p>;
   }
 
   if (sessions.length === 0) {
-    return <p className="list-state">No sessions match the current filters.</p>;
+    return (
+      <div className="list-state list-state--empty">
+        <span className="list-state__emoji" aria-hidden="true">📋</span>
+        <p>
+          {hasActiveFilters
+            ? 'No sessions match the current filters.'
+            : 'No sessions recorded yet. Log your first game night!'}
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -17,16 +26,27 @@ function SessionList({ sessions, loading, onEdit, onDelete }) {
           <div>
             <h3>{session.gameName}</h3>
             <p className="session-list__meta">
-              {session.sessionDate} • Winner: {session.winner}
+              {session.sessionDate} • Winner:{' '}
+              <span className="session-list__winner">🏆 {session.winner}</span>
             </p>
             <p>Players: {session.players.join(', ')}</p>
             <p>{session.notes || 'No notes added for this session.'}</p>
           </div>
           <div className="session-list__actions">
-            <button type="button" aria-label={`Edit session: ${session.gameName} on ${session.sessionDate}`} onClick={() => onEdit(session)}>
+            <button
+              type="button"
+              className="session-list__action-button session-list__action-button--edit"
+              aria-label={`Edit session: ${session.gameName} on ${session.sessionDate}`}
+              onClick={() => onEdit(session)}
+            >
               Edit
             </button>
-            <button type="button" aria-label={`Delete session: ${session.gameName} on ${session.sessionDate}`} className="button-danger" onClick={() => onDelete(session.id)}>
+            <button
+              type="button"
+              className="session-list__action-button session-list__action-button--delete"
+              aria-label={`Delete session: ${session.gameName} on ${session.sessionDate}`}
+              onClick={() => onDelete(session.id)}
+            >
               Delete
             </button>
           </div>
@@ -48,6 +68,7 @@ SessionList.propTypes = {
     })
   ).isRequired,
   loading: PropTypes.bool.isRequired,
+  hasActiveFilters: PropTypes.bool.isRequired,
   onEdit: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };

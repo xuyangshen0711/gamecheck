@@ -6,7 +6,10 @@ function Header({ currentUser, onLogout, logoutPending }) {
     <header className="header">
       <div>
         <p className="header__eyebrow">CS5610 Project 3</p>
-        <h1>GameCheck</h1>
+        <div className="header__brand">
+          <img src="/gamecheck-logo.png" alt="GameCheck logo" className="header__logo" />
+          <h1>GameCheck</h1>
+        </div>
       </div>
       <div className="header__meta">
         <p className="header__summary">

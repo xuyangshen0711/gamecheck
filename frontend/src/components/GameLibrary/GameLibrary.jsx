@@ -18,6 +18,7 @@ function GameLibrary({ games, loading, onDataChange, onOpenSessionLogging, setEr
   const [searchValue, setSearchValue] = useState('');
   const [editingGame, setEditingGame] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [isFormExpanded, setIsFormExpanded] = useState(false);
 
   async function handleSubmit(payload) {
     setSubmitting(true);
@@ -32,6 +33,7 @@ function GameLibrary({ games, loading, onDataChange, onOpenSessionLogging, setEr
       }
 
       setEditingGame(null);
+      setIsFormExpanded(false);
       setErrorMessage('');
       await onDataChange();
     } catch (error) {
@@ -49,6 +51,16 @@ function GameLibrary({ games, loading, onDataChange, onOpenSessionLogging, setEr
     } catch (error) {
       setErrorMessage(error.message);
     }
+  }
+
+  function handleEdit(game) {
+    setEditingGame(game);
+    setIsFormExpanded(true);
+  }
+
+  function handleCancelEdit() {
+    setEditingGame(null);
+    setIsFormExpanded(false);
   }
 
   const filteredGames = games.filter((game) => {
@@ -90,18 +102,44 @@ function GameLibrary({ games, loading, onDataChange, onOpenSessionLogging, setEr
           </button>
         </div>
       </div>
-      <GameForm
-        games={games}
-        initialValues={editingGame || emptyGame}
-        onSubmit={handleSubmit}
-        onCancel={() => setEditingGame(null)}
-        isEditing={Boolean(editingGame)}
-        submitting={submitting}
-      />
+      <div className="panel__form-section">
+        <button
+          type="button"
+          className="panel__toggle"
+          aria-expanded={isFormExpanded}
+          aria-controls="game-form-region"
+          onClick={() => {
+            if (isFormExpanded && editingGame) {
+              setEditingGame(null);
+            }
+
+            setIsFormExpanded((currentValue) => !currentValue);
+          }}
+        >
+          <span className="panel__toggle-icon" aria-hidden="true">
+            {isFormExpanded ? '-' : '+'}
+          </span>
+          {isFormExpanded ? 'Hide Game Form' : 'Add New Game'}
+        </button>
+        <div
+          id="game-form-region"
+          className={isFormExpanded ? 'panel__form-wrapper panel__form-wrapper--expanded' : 'panel__form-wrapper'}
+        >
+          <GameForm
+            games={games}
+            initialValues={editingGame || emptyGame}
+            onSubmit={handleSubmit}
+            onCancel={handleCancelEdit}
+            isEditing={Boolean(editingGame)}
+            submitting={submitting}
+          />
+        </div>
+      </div>
       <GameList
         games={filteredGames}
         loading={loading}
-        onEdit={setEditingGame}
+        hasSearchQuery={Boolean(searchValue.trim())}
+        onEdit={handleEdit}
         onDelete={handleDelete}
       />
     </section>

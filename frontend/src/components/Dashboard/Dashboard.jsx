@@ -1,6 +1,15 @@
 import PropTypes from 'prop-types';
 import './Dashboard.css';
 
+const statIcons = {
+  games: '🎲',
+  sessions: '📋',
+  players: '👥',
+  winner: '🏆',
+  mostPlayed: '⭐',
+  mostActive: '🔥',
+};
+
 function getTopEntry(counts) {
   return [...counts.entries()].sort((left, right) => {
     if (right[1] !== left[1]) {
@@ -27,39 +36,47 @@ function Dashboard({ games, sessions, loading }) {
 
   const mostPlayedGame = getTopEntry(gameCounts);
   const mostActivePlayer = getTopEntry(playerCounts);
+  const isEmptyState = !loading && games.length === 0 && sessions.length === 0;
+  const statCards = [
+    { key: 'games', label: 'Games', value: games.length },
+    { key: 'sessions', label: 'Sessions', value: sessions.length },
+    { key: 'players', label: 'Players Logged', value: uniquePlayers.size },
+    { key: 'winner', label: 'Latest Winner', value: latestSession?.winner || 'No sessions yet' },
+    {
+      key: 'mostPlayed',
+      label: 'Most Played Game',
+      value: mostPlayedGame?.[0] || 'No sessions yet',
+      detail: mostPlayedGame ? `${mostPlayedGame[1]} sessions` : '',
+      compact: true,
+    },
+    {
+      key: 'mostActive',
+      label: 'Most Active Player',
+      value: mostActivePlayer?.[0] || 'No players yet',
+      detail: mostActivePlayer ? `${mostActivePlayer[1]} appearances` : '',
+      compact: true,
+    },
+  ];
 
   return (
     <section className="dashboard">
-      <article className="dashboard__card">
-        <span className="dashboard__label">Games</span>
-        <strong>{loading ? '...' : games.length}</strong>
-      </article>
-      <article className="dashboard__card">
-        <span className="dashboard__label">Sessions</span>
-        <strong>{loading ? '...' : sessions.length}</strong>
-      </article>
-      <article className="dashboard__card">
-        <span className="dashboard__label">Players Logged</span>
-        <strong>{loading ? '...' : uniquePlayers.size}</strong>
-      </article>
-      <article className="dashboard__card">
-        <span className="dashboard__label">Latest Winner</span>
-        <strong>{loading ? '...' : latestSession?.winner || 'No sessions yet'}</strong>
-      </article>
-      <article className="dashboard__card">
-        <span className="dashboard__label">Most Played Game</span>
-        <strong className="dashboard__value dashboard__value--compact">
-          {loading ? '...' : mostPlayedGame?.[0] || 'No sessions yet'}
-        </strong>
-        <small>{loading ? '' : mostPlayedGame ? `${mostPlayedGame[1]} sessions` : ''}</small>
-      </article>
-      <article className="dashboard__card">
-        <span className="dashboard__label">Most Active Player</span>
-        <strong className="dashboard__value dashboard__value--compact">
-          {loading ? '...' : mostActivePlayer?.[0] || 'No players yet'}
-        </strong>
-        <small>{loading ? '' : mostActivePlayer ? `${mostActivePlayer[1]} appearances` : ''}</small>
-      </article>
+      {statCards.map((card) => (
+        <article className="dashboard__card" key={card.key}>
+          <span className="dashboard__label">
+            <span className="dashboard__icon" aria-hidden="true">{statIcons[card.key]}</span>
+            {card.label}
+          </span>
+          <strong className={card.compact ? 'dashboard__value dashboard__value--compact' : 'dashboard__value'}>
+            {loading ? '...' : card.value}
+          </strong>
+          <small>{loading ? '' : card.detail || ''}</small>
+        </article>
+      ))}
+      {isEmptyState ? (
+        <p className="dashboard__empty-state">
+          🎯 Start by adding games and logging sessions to see your stats!
+        </p>
+      ) : null}
     </section>
   );
 }

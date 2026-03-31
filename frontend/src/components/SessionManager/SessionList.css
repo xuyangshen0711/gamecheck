@@ -11,6 +11,12 @@
   gap: 1rem;
   grid-template-columns: 1fr auto;
   padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.session-list__item:hover {
+  box-shadow: 0 18px 34px rgba(23, 50, 77, 0.12);
+  transform: translateY(-3px);
 }
 
 .session-list__item h3 {
@@ -25,9 +31,59 @@
   color: #5a7082;
 }
 
+.session-list__winner {
+  color: var(--color-accent);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 .session-list__actions {
   display: flex;
   gap: 0.6rem;
+}
+
+.session-list__action-button {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: var(--color-accent);
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  transition: all 0.15s ease;
+}
+
+.session-list__action-button:hover:not(:disabled) {
+  color: #ffffff;
+}
+
+.session-list__action-button--edit:hover:not(:disabled) {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.session-list__action-button--delete {
+  color: var(--color-danger);
+}
+
+.session-list__action-button--delete:hover:not(:disabled) {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.list-state--empty {
+  color: var(--color-text-muted);
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  padding: 1.75rem 1rem;
+  text-align: center;
+}
+
+.list-state--empty p {
+  margin: 0;
+}
+
+.list-state__emoji {
+  font-size: 1.6rem;
 }
 
 @media (max-width: 720px) {

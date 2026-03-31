@@ -1,3 +1,8 @@
+.session-filter {
+  display: grid;
+  gap: 1.1rem;
+}
+
 .filter-row {
   display: grid;
   gap: 1rem;

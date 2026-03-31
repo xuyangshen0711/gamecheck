@@ -38,7 +38,7 @@ function SessionFilter({ games, filters, onChange }) {
   }
 
   return (
-    <>
+    <section aria-label="Filter sessions">
       <div className="filter-row">
         <label>
           <span>Filter by game</span>
@@ -69,7 +69,7 @@ function SessionFilter({ games, filters, onChange }) {
           Clear
         </button>
       </div>
-    </>
+    </section>
   );
 }
 

@@ -9,6 +9,10 @@
 
 - CS5610 Project 3
 
+## Live Demo
+
+- [https://gamecheck-ro7u.onrender.com](https://gamecheck-ro7u.onrender.com)
+
 ## Project Objective
 
 GameCheck is a full-stack web application for tracking a personal board game library, recording game night sessions, and reviewing player statistics. The project follows the required CS5610 Project 3 stack: Node.js, Express, client-side rendered React with Hooks, and MongoDB using the official Node.js driver.

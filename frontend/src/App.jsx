@@ -252,7 +252,7 @@ function App() {
   return (
     <div className="app-shell">
       <Header currentUser={currentUser} onLogout={handleLogout} logoutPending={logoutPending} />
-      {errorMessage ? <p className="app-shell__error">{errorMessage}</p> : null}
+      {errorMessage ? <p className="app-shell__error" role="alert">{errorMessage}</p> : null}
       {authLoading ? (
         <section className="app-shell__notice">
           <h2>Checking session</h2>
@@ -281,9 +281,10 @@ function App() {
         </section>
       ) : null}
       <Dashboard games={games} sessions={allSessions} loading={initialLoading} />
-      <section className="app-shell__view-switcher">
+      <nav aria-label="View navigation" className="app-shell__view-switcher">
         <button
           type="button"
+          aria-pressed={activePanel === 'both'}
           className={activePanel === 'both' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
           onClick={() => setActivePanel('both')}
         >
@@ -291,6 +292,7 @@ function App() {
         </button>
         <button
           type="button"
+          aria-pressed={activePanel === 'sessions'}
           className={activePanel === 'sessions' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
           onClick={() => setActivePanel('sessions')}
         >
@@ -298,12 +300,13 @@ function App() {
         </button>
         <button
           type="button"
+          aria-pressed={activePanel === 'stats'}
           className={activePanel === 'stats' ? 'app-shell__view-button app-shell__view-button--active' : 'app-shell__view-button'}
           onClick={() => setActivePanel('stats')}
         >
           Statistics
         </button>
-      </section>
+      </nav>
       <main
         className={`app-shell__content ${
           activePanel === 'sessions' || activePanel === 'stats' ? 'app-shell__content--single' : ''

@@ -22,10 +22,10 @@ function GameList({ games, loading, onEdit, onDelete }) {
             <p>{game.description || 'No description provided yet.'}</p>
           </div>
           <div className="game-list__actions">
-            <button type="button" onClick={() => onEdit(game)}>
+            <button type="button" aria-label={`Edit ${game.name}`} onClick={() => onEdit(game)}>
               Edit
             </button>
-            <button type="button" className="button-danger" onClick={() => onDelete(game.id)}>
+            <button type="button" aria-label={`Delete ${game.name}`} className="button-danger" onClick={() => onDelete(game.id)}>
               Delete
             </button>
           </div>

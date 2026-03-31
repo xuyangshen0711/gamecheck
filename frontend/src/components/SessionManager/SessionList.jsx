@@ -23,10 +23,10 @@ function SessionList({ sessions, loading, onEdit, onDelete }) {
             <p>{session.notes || 'No notes added for this session.'}</p>
           </div>
           <div className="session-list__actions">
-            <button type="button" onClick={() => onEdit(session)}>
+            <button type="button" aria-label={`Edit session: ${session.gameName} on ${session.sessionDate}`} onClick={() => onEdit(session)}>
               Edit
             </button>
-            <button type="button" className="button-danger" onClick={() => onDelete(session.id)}>
+            <button type="button" aria-label={`Delete session: ${session.gameName} on ${session.sessionDate}`} className="button-danger" onClick={() => onDelete(session.id)}>
               Delete
             </button>
           </div>

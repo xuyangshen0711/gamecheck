@@ -12,7 +12,7 @@
 .statistics-page__hero {
   background:
     radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent 24rem),
-    linear-gradient(135deg, #17324d, #2b6b63);
+    linear-gradient(135deg, var(--color-primary), var(--color-accent));
   border-radius: 24px;
   color: #f6fbff;
   display: grid;
@@ -83,6 +83,62 @@
 .statistics-page__matchup-card p {
   color: #5d7489;
   margin: 0;
+}
+
+.statistics-page__chart-panel {
+  padding: 1.25rem;
+}
+
+.statistics-page__chart-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.statistics-page__chart-item {
+  display: grid;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(209, 224, 234, 0.95);
+  border-radius: 20px;
+  padding: 1rem;
+}
+
+.statistics-page__chart-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.statistics-page__chart-bar {
+  background: rgba(23, 50, 77, 0.08);
+  border-radius: 999px;
+  display: grid;
+  grid-template-columns: auto auto;
+  min-height: 0.9rem;
+  overflow: hidden;
+}
+
+.statistics-page__chart-segment {
+  display: block;
+  height: 100%;
+}
+
+.statistics-page__chart-segment--left {
+  background: var(--color-primary);
+}
+
+.statistics-page__chart-segment--right {
+  background: var(--color-accent);
+}
+
+.statistics-page__chart-meta {
+  color: var(--color-text-muted);
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+  flex-wrap: wrap;
 }
 
 .statistics-page__insights {

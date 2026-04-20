@@ -17,6 +17,13 @@ function hasActiveSessionFilters(filters) {
   return Boolean(filters.gameId || filters.player.trim());
 }
 
+const themeOptions = [
+  { value: 'day', label: 'Day mode' },
+  { value: 'night', label: 'Night mode' },
+  { value: 'forest', label: 'Forest theme' },
+  { value: 'sunset', label: 'Sunset theme' },
+];
+
 function App() {
   const [games, setGames] = useState([]);
   const [allSessions, setAllSessions] = useState([]);
@@ -25,6 +32,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [activePanel, setActivePanel] = useState('both');
   const [focusedStatsPlayer, setFocusedStatsPlayer] = useState('');
+  const [theme, setTheme] = useState(() => localStorage.getItem('gamecheck-theme') || 'day');
   const [sessionFilters, setSessionFilters] = useState(emptySessionFilters);
   const [errorMessage, setErrorMessage] = useState('');
   const [authLoading, setAuthLoading] = useState(true);
@@ -57,6 +65,11 @@ function App() {
       })
       .map(([player]) => player);
   }, [allSessions]);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('gamecheck-theme', theme);
+  }, [theme]);
 
   const resetWorkspaceState = useCallback(() => {
     activeRequestControllerRef.current?.abort();
@@ -249,9 +262,20 @@ function App() {
     }
   }
 
+  function handleThemeChange(event) {
+    setTheme(event.target.value);
+  }
+
   return (
     <div className="app-shell">
-      <Header currentUser={currentUser} onLogout={handleLogout} logoutPending={logoutPending} />
+      <Header
+        currentUser={currentUser}
+        onLogout={handleLogout}
+        logoutPending={logoutPending}
+        theme={theme}
+        onThemeChange={handleThemeChange}
+        themeOptions={themeOptions}
+      />
       {errorMessage ? <p className="app-shell__error" role="alert">{errorMessage}</p> : null}
       {authLoading ? (
         <section className="app-shell__notice">

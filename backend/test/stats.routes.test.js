@@ -78,13 +78,17 @@ test('buildStatisticsPayload returns dashboard, win rates, streaks, and rivalrie
   });
 });
 
-test('buildStatisticsPayload filters head to head results by focus player', () => {
+test('buildStatisticsPayload filters all player statistics by focus player', () => {
   const statistics = buildStatisticsPayload({
     gamesCount: 3,
     sessions,
     focusPlayer: 'Taylor',
   });
 
+  assert.equal(statistics.dashboard.sessionsLogged, 2);
+  assert.equal(statistics.dashboard.playersTracked, 2);
+  assert.equal(statistics.dashboard.latestWinner, 'Alex');
+  assert.equal(statistics.dashboard.mostPlayedGame.name, 'Heat');
   assert.equal(statistics.headToHead.length, 1);
   assert.deepEqual(statistics.headToHead[0].players, ['Alex', 'Taylor']);
   assert.equal(statistics.headToHead[0].meetings, 2);

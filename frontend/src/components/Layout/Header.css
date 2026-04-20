@@ -1,6 +1,6 @@
 .header {
   align-items: end;
-  background: linear-gradient(135deg, #17324d, #295f78);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
   border-radius: 24px;
   color: #f8fbff;
   display: grid;
@@ -44,6 +44,21 @@
 .header__meta {
   display: grid;
   gap: 1rem;
+}
+
+.header__theme-selector {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 240px;
+}
+
+.header__theme-selector span {
+  color: #dbe4f1;
+  font-size: 0.85rem;
+}
+
+.header__theme-selector select {
+  width: 100%;
 }
 
 .header__auth {

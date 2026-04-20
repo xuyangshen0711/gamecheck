@@ -10,6 +10,10 @@ function formatRivalryScore(rivalry) {
   return `${rivalry.wins[leftPlayer]} - ${rivalry.wins[rightPlayer]}`;
 }
 
+function calculateChartWidth(value, max) {
+  return max > 0 ? `${Math.round((value / max) * 100)}%` : '0%';
+}
+
 function MetricCard({ label, value, detail }) {
   return (
     <article className="statistics-page__metric">
@@ -58,6 +62,13 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
   const longestStreaks =
     stats?.streaks.longest.filter((entry) => entry.streak > 0).slice(0, 5) || [];
   const headToHead = stats?.headToHead.slice(0, 6) || [];
+  const headToHeadChart = headToHead.slice(0, 5);
+  const headToHeadMaxWins = headToHeadChart.reduce(
+    (maxWins, rivalry) => Math.max(maxWins, rivalry.wins[rivalry.players[0]], rivalry.wins[rivalry.players[1]]),
+    1
+  );
+  const winRateChart = winRates.slice(0, 5);
+  const maxWinRate = winRateChart.reduce((maxRate, entry) => Math.max(maxRate, entry.winRate), 1);
 
   return (
     <section className="statistics-page">
@@ -197,6 +208,82 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
           renderMeta={(item) => `${item.startDate} to ${item.endDate}`}
         />
       </div>
+
+      <section className="statistics-page__panel statistics-page__chart-panel">
+        <div className="statistics-page__section-heading">
+          <div>
+            <h3>Head-to-Head Win Chart</h3>
+            <p>Visualize matchup results for the selected player or the most active rivalries.</p>
+          </div>
+        </div>
+        {headToHeadChart.length === 0 ? (
+          <p className="list-state">No matchup data available for charting.</p>
+        ) : (
+          <div className="statistics-page__chart-grid">
+            {headToHeadChart.map((rivalry) => {
+              const [leftPlayer, rightPlayer] = rivalry.players;
+              const leftWins = rivalry.wins[leftPlayer];
+              const rightWins = rivalry.wins[rightPlayer];
+
+              return (
+                <article className="statistics-page__chart-item" key={rivalry.players.join('::')}>
+                  <div className="statistics-page__chart-row">
+                    <strong>{rivalry.players.join(' vs ')}</strong>
+                    <span>{rivalry.meetings} meetings</span>
+                  </div>
+                  <div className="statistics-page__chart-bar">
+                    <span
+                      className="statistics-page__chart-segment statistics-page__chart-segment--left"
+                      style={{ width: calculateChartWidth(leftWins, headToHeadMaxWins) }}
+                    />
+                    <span
+                      className="statistics-page__chart-segment statistics-page__chart-segment--right"
+                      style={{ width: calculateChartWidth(rightWins, headToHeadMaxWins) }}
+                    />
+                  </div>
+                  <div className="statistics-page__chart-meta">
+                    <span>{leftPlayer}: {leftWins} wins</span>
+                    <span>{rightPlayer}: {rightWins} wins</span>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="statistics-page__panel statistics-page__chart-panel">
+        <div className="statistics-page__section-heading">
+          <div>
+            <h3>Win Rate Distribution</h3>
+            <p>Compare the top players by win rate to see who dominates the table.</p>
+          </div>
+        </div>
+        {winRateChart.length === 0 ? (
+          <p className="list-state">No win rate data available for charting.</p>
+        ) : (
+          <div className="statistics-page__chart-grid">
+            {winRateChart.map((entry) => (
+              <article className="statistics-page__chart-item" key={entry.player}>
+                <div className="statistics-page__chart-row">
+                  <strong>{entry.player}</strong>
+                  <span>{formatPercentage(entry.winRate)}</span>
+                </div>
+                <div className="statistics-page__chart-bar">
+                  <span
+                    className="statistics-page__chart-segment statistics-page__chart-segment--left"
+                    style={{ width: calculateChartWidth(entry.winRate, maxWinRate) }}
+                  />
+                </div>
+                <div className="statistics-page__chart-meta">
+                  <span>{entry.wins} wins</span>
+                  <span>{entry.appearances} appearances</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
 
       <section className="statistics-page__panel">
         <div className="statistics-page__section-heading">

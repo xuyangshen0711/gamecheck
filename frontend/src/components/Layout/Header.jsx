@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import './Header.css';
 
-function Header({ currentUser, onLogout, logoutPending }) {
+function Header({ currentUser, onLogout, logoutPending, theme, onThemeChange, themeOptions }) {
   return (
     <header className="header">
       <div>
@@ -15,6 +15,16 @@ function Header({ currentUser, onLogout, logoutPending }) {
         <p className="header__summary">
           Track your game library, log each session, and keep a reliable history of game nights.
         </p>
+        <label className="header__theme-selector">
+          <span>Theme</span>
+          <select value={theme} onChange={onThemeChange}>
+            {themeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
         {currentUser ? (
           <div className="header__auth">
             <p className="header__user">Signed in as <strong>{currentUser.username}</strong></p>
@@ -34,6 +44,14 @@ Header.propTypes = {
   }),
   onLogout: PropTypes.func.isRequired,
   logoutPending: PropTypes.bool.isRequired,
+  theme: PropTypes.string.isRequired,
+  onThemeChange: PropTypes.func.isRequired,
+  themeOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 Header.defaultProps = {

@@ -10,8 +10,8 @@ function formatRivalryScore(rivalry) {
   return `${rivalry.wins[leftPlayer]} - ${rivalry.wins[rightPlayer]}`;
 }
 
-function calculateChartWidth(value, max) {
-  return max > 0 ? `${Math.round((value / max) * 100)}%` : '0%';
+function calculateChartHeight(value, max) {
+  return max > 0 ? `${Math.max(10, Math.round((value / max) * 100))}%` : '0%';
 }
 
 function MetricCard({ label, value, detail }) {
@@ -212,38 +212,36 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
       <section className="statistics-page__panel statistics-page__chart-panel">
         <div className="statistics-page__section-heading">
           <div>
-            <h3>Head-to-Head Win Chart</h3>
-            <p>Visualize matchup results for the selected player or the most active rivalries.</p>
+            <h3>Head-to-Head Histogram</h3>
+            <p>Visualize rivalry wins as grouped histogram bars.</p>
           </div>
         </div>
         {headToHeadChart.length === 0 ? (
           <p className="list-state">No matchup data available for charting.</p>
         ) : (
-          <div className="statistics-page__chart-grid">
+          <div className="statistics-page__histogram-grid">
             {headToHeadChart.map((rivalry) => {
               const [leftPlayer, rightPlayer] = rivalry.players;
               const leftWins = rivalry.wins[leftPlayer];
               const rightWins = rivalry.wins[rightPlayer];
 
               return (
-                <article className="statistics-page__chart-item" key={rivalry.players.join('::')}>
-                  <div className="statistics-page__chart-row">
+                <article className="statistics-page__histogram-item" key={rivalry.players.join('::')}>
+                  <div className="statistics-page__histogram-header">
                     <strong>{rivalry.players.join(' vs ')}</strong>
                     <span>{rivalry.meetings} meetings</span>
                   </div>
-                  <div className="statistics-page__chart-bar">
-                    <span
-                      className="statistics-page__chart-segment statistics-page__chart-segment--left"
-                      style={{ width: calculateChartWidth(leftWins, headToHeadMaxWins) }}
-                    />
-                    <span
-                      className="statistics-page__chart-segment statistics-page__chart-segment--right"
-                      style={{ width: calculateChartWidth(rightWins, headToHeadMaxWins) }}
-                    />
+                  <div className="statistics-page__histogram-bars">
+                    <div className="statistics-page__histogram-bar statistics-page__histogram-bar--left" style={{ height: calculateChartHeight(leftWins, headToHeadMaxWins) }}>
+                      <span>{leftWins}</span>
+                    </div>
+                    <div className="statistics-page__histogram-bar statistics-page__histogram-bar--right" style={{ height: calculateChartHeight(rightWins, headToHeadMaxWins) }}>
+                      <span>{rightWins}</span>
+                    </div>
                   </div>
-                  <div className="statistics-page__chart-meta">
-                    <span>{leftPlayer}: {leftWins} wins</span>
-                    <span>{rightPlayer}: {rightWins} wins</span>
+                  <div className="statistics-page__histogram-labels">
+                    <span>{leftPlayer}</span>
+                    <span>{rightPlayer}</span>
                   </div>
                 </article>
               );
@@ -255,27 +253,29 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
       <section className="statistics-page__panel statistics-page__chart-panel">
         <div className="statistics-page__section-heading">
           <div>
-            <h3>Win Rate Distribution</h3>
-            <p>Compare the top players by win rate to see who dominates the table.</p>
+            <h3>Win Rate Histogram</h3>
+            <p>Compare the top players using vertical win rate bars.</p>
           </div>
         </div>
         {winRateChart.length === 0 ? (
           <p className="list-state">No win rate data available for charting.</p>
         ) : (
-          <div className="statistics-page__chart-grid">
+          <div className="statistics-page__histogram-grid statistics-page__histogram-grid--wide">
             {winRateChart.map((entry) => (
-              <article className="statistics-page__chart-item" key={entry.player}>
-                <div className="statistics-page__chart-row">
+              <article className="statistics-page__histogram-item" key={entry.player}>
+                <div className="statistics-page__histogram-header">
                   <strong>{entry.player}</strong>
                   <span>{formatPercentage(entry.winRate)}</span>
                 </div>
-                <div className="statistics-page__chart-bar">
-                  <span
-                    className="statistics-page__chart-segment statistics-page__chart-segment--left"
-                    style={{ width: calculateChartWidth(entry.winRate, maxWinRate) }}
-                  />
+                <div className="statistics-page__histogram-bars statistics-page__histogram-bars--single">
+                  <div
+                    className="statistics-page__histogram-bar statistics-page__histogram-bar--single"
+                    style={{ height: calculateChartHeight(entry.winRate, maxWinRate) }}
+                  >
+                    <span>{formatPercentage(entry.winRate)}</span>
+                  </div>
                 </div>
-                <div className="statistics-page__chart-meta">
+                <div className="statistics-page__histogram-labels statistics-page__histogram-labels--single">
                   <span>{entry.wins} wins</span>
                   <span>{entry.appearances} appearances</span>
                 </div>

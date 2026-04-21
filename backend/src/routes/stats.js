@@ -288,7 +288,10 @@ export function createStatsRouter({ databaseConnector = connectToDatabase } = {}
   router.get('/', async (req, res) => {
     const db = await databaseConnector();
     const focusPlayer = req.query.player?.trim() || '';
-    const sessionFilter = focusPlayer ? { players: focusPlayer } : {};
+    const focusGameId = req.query.gameId?.trim() || '';
+    const sessionFilter = {};
+    if (focusPlayer) sessionFilter.players = focusPlayer;
+    if (focusGameId) sessionFilter.gameId = focusGameId;
     const [gamesCount, sessions] = await Promise.all([
       db.collection('games').countDocuments(),
       db.collection('sessions').find(sessionFilter).sort({ sessionDate: -1 }).toArray(),

@@ -12,10 +12,10 @@
 }
 
 .player-autocomplete__option {
-  background: #eef5fb;
-  border: 1px solid #c8d8e6;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
   border-radius: 999px;
-  color: #17324d;
+  color: var(--color-text);
   cursor: pointer;
   padding: 0.35rem 0.75rem;
 }

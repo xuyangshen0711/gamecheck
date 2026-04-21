@@ -73,6 +73,10 @@
   margin: 0;
 }
 
+:root[data-theme='night'] .header {
+  background: linear-gradient(135deg, #172645, #1e3a6e);
+}
+
 @media (max-width: 900px) {
   .header {
     grid-template-columns: 1fr;

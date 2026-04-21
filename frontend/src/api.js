@@ -122,6 +122,10 @@ export const api = {
       params.set('player', filters.player);
     }
 
+    if (filters.gameId) {
+      params.set('gameId', filters.gameId);
+    }
+
     const query = params.toString() ? `?${params.toString()}` : '';
     return request(`/stats${query}`, options);
   },

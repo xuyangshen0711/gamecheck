@@ -32,6 +32,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [activePanel, setActivePanel] = useState('both');
   const [focusedStatsPlayer, setFocusedStatsPlayer] = useState('');
+  const [focusedStatsGame, setFocusedStatsGame] = useState('');
   const [sessionFilters, setSessionFilters] = useState({
     gameId: '',
     player: '',
@@ -43,6 +44,9 @@ function App() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem('gamecheck-theme') || 'day');
+  const [sessionPage, setSessionPage] = useState(0);
+  const [paginationInfo, setPaginationInfo] = useState(null);
   const activeRequestControllerRef = useRef(null);
   const activeStatsRequestControllerRef = useRef(null);
   const hasLoadedDataRef = useRef(false);
@@ -97,7 +101,7 @@ function App() {
     setErrorMessage(message);
   }, [resetWorkspaceState]);
 
-  const loadStats = useCallback(async (player = '') => {
+  const loadStats = useCallback(async (player = '', gameId = '') => {
     activeStatsRequestControllerRef.current?.abort();
     const controller = new AbortController();
     activeStatsRequestControllerRef.current = controller;
@@ -105,7 +109,7 @@ function App() {
     setStatsLoading(true);
 
     try {
-      const statsPayload = await api.getStats({ player }, { signal: controller.signal });
+      const statsPayload = await api.getStats({ player, gameId }, { signal: controller.signal });
       setStats(statsPayload);
       setErrorMessage('');
     } catch (error) {
@@ -272,7 +276,12 @@ function App() {
 
   async function handleStatsFocusChange(player) {
     setFocusedStatsPlayer(player);
-    await loadStats(player);
+    await loadStats(player, focusedStatsGame);
+  }
+
+  async function handleStatsGameChange(gameId) {
+    setFocusedStatsGame(gameId);
+    await loadStats(focusedStatsPlayer, gameId);
   }
 
   async function handleAuthenticate(credentials, mode) {
@@ -315,9 +324,30 @@ function App() {
     setTheme(event.target.value);
   }
 
+  if (authLoading) {
+    return <div className="app-shell" />;
+  }
+
+  if (!currentUser) {
+    return (
+      <AuthPanel
+        submitting={authSubmitting}
+        errorMessage={errorMessage}
+        onAuthenticate={handleAuthenticate}
+      />
+    );
+  }
+
   return (
     <div className="app-shell">
-      <Header />
+      <Header
+        currentUser={currentUser}
+        onLogout={handleLogout}
+        logoutPending={logoutPending}
+        theme={theme}
+        onThemeChange={handleThemeChange}
+        themeOptions={themeOptions}
+      />
       {errorMessage ? <p className="app-shell__error">{errorMessage}</p> : null}
       {isEmptyDeployment ? (
         <section className="app-shell__notice">
@@ -386,8 +416,11 @@ function App() {
             stats={stats}
             loading={statsLoading}
             focusedPlayer={focusedStatsPlayer}
+            focusedGame={focusedStatsGame}
+            games={games}
             playerSuggestions={playerSuggestions}
             onFocusPlayerChange={handleStatsFocusChange}
+            onFocusGameChange={handleStatsGameChange}
           />
         ) : null}
       </main>

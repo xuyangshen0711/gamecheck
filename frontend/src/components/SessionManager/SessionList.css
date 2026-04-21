@@ -28,7 +28,7 @@
 }
 
 .session-list__meta {
-  color: #5a7082;
+  color: var(--color-text-muted);
 }
 
 .session-list__winner {

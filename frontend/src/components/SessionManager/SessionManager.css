@@ -1,5 +1,5 @@
 .panel__status {
-  color: #5a7082;
+  color: var(--color-text-muted);
   margin: 0;
 }
 

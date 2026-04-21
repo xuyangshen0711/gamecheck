@@ -53,7 +53,7 @@ function RankedList({ title, subtitle, emptyMessage, items, renderValue, renderM
   );
 }
 
-function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFocusPlayerChange }) {
+function StatisticsPage({ stats, loading, focusedPlayer, focusedGame, games, playerSuggestions, onFocusPlayerChange, onFocusGameChange }) {
   const dashboard = stats?.dashboard;
   const winRates = stats?.winRates.slice(0, 5) || [];
   const mostPlayedGames = stats?.mostPlayedGames.slice(0, 5) || [];
@@ -77,18 +77,38 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
           <p className="panel__eyebrow">Built by Gaoyuan Shi</p>
           <h2>Player Statistics &amp; History</h2>
         </div>
-        <label className="statistics-page__focus-filter">
-          <span>Head-to-head spotlight</span>
-          <select value={focusedPlayer} onChange={(event) => onFocusPlayerChange(event.target.value)}>
-            <option value="">All players</option>
-            {playerSuggestions.map((player) => (
-              <option key={player} value={player}>
-                {player}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="statistics-page__filters">
+          <label className="statistics-page__focus-filter">
+            <span>Filter by game</span>
+            <select value={focusedGame} onChange={(event) => onFocusGameChange(event.target.value)}>
+              <option value="">All games</option>
+              {games.map((game) => (
+                <option key={game.id} value={game.id}>
+                  {game.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="statistics-page__focus-filter">
+            <span>Filter by player</span>
+            <select value={focusedPlayer} onChange={(event) => onFocusPlayerChange(event.target.value)}>
+              <option value="">All players</option>
+              {playerSuggestions.map((player) => (
+                <option key={player} value={player}>
+                  {player}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
+      {(focusedGame || focusedPlayer) && (
+        <p className="statistics-page__filter-summary">
+          Showing stats for{focusedGame ? ` game: ${games.find((g) => g.id === focusedGame)?.name}` : ''}
+          {focusedGame && focusedPlayer ? ' ·' : ''}
+          {focusedPlayer ? ` player: ${focusedPlayer}` : ''}
+        </p>
+      )}
 
       <div className="statistics-page__hero">
         <div className="statistics-page__hero-copy">
@@ -352,8 +372,11 @@ StatisticsPage.propTypes = {
   }),
   loading: PropTypes.bool.isRequired,
   focusedPlayer: PropTypes.string.isRequired,
+  focusedGame: PropTypes.string.isRequired,
+  games: PropTypes.arrayOf(PropTypes.shape({ _id: PropTypes.string, name: PropTypes.string })).isRequired,
   playerSuggestions: PropTypes.arrayOf(PropTypes.string).isRequired,
   onFocusPlayerChange: PropTypes.func.isRequired,
+  onFocusGameChange: PropTypes.func.isRequired,
 };
 
 StatisticsPage.defaultProps = {

@@ -33,8 +33,8 @@ GameCheck is a full-stack web application for tracking a personal board game lib
 
 1. Copy `backend/.env.example` to `backend/.env`.
 2. Install dependencies in `backend/`.
-3. Start MongoDB locally or provide a MongoDB connection string.
-4. Run `npm run seed` to generate synthetic data.
+3. Start MongoDB locally or provide a MongoDB connection string in `.env` as `MONGO_URI`.
+4. Run `npm run seed` to generate 1000+ synthetic records across 6 curated board games with 50+ unique player names.
 5. Run `npm run dev` or `npm start`.
 
 ### Frontend
@@ -42,6 +42,16 @@ GameCheck is a full-stack web application for tracking a personal board game lib
 1. Install dependencies in `frontend/`.
 2. Optional: create `frontend/.env` with `VITE_API_BASE_URL=http://localhost:4000/api`.
 3. Run `npm run dev`.
+
+## Features: Data & Pagination
+
+The database is pre-populated with **1000+ synthetic session records** distributed across multiple games:
+- **6 board games**: Azul, Catan, Codenames, Wingspan, Ticket to Ride, Splendor
+- **50+ unique player names** for realistic game session data
+- **Session pagination**: The frontend displays 50 sessions per page with a "Load More" button to fetch additional pages
+- **Dynamic player suggestions**: Based on actual session participation
+
+This ensures the application can handle realistic data volumes while keeping the UI responsive through pagination.
 
 ## Render Deployment
 
@@ -63,10 +73,12 @@ MONGO_URI="your-atlas-connection-string" npm run render-seed
 ## Feature Scope
 
 - Create, edit, delete, search, and browse games in the library.
-- Create, edit, delete, filter, and browse logged sessions.
-- Filter sessions by game and player.
+- Create, edit, delete, filter, and browse logged sessions with **pagination** (50 sessions per page).
+- Filter sessions by game and player with smart pagination reset.
 - View a lightweight dashboard summary for games, sessions, players, and the latest winner.
 - View player statistics such as win rates, streaks, rivalry matchups, and most-played games.
+- **Load More** button to fetch additional session pages without page reload.
+- Dynamic player suggestions based on session history across 50+ unique names.
 
 ## Project Structure
 

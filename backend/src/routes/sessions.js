@@ -27,6 +27,9 @@ export function createSessionsRouter({ databaseConnector = connectToDatabase } =
   router.get('/', async (req, res) => {
     const db = await databaseConnector();
     const filters = {};
+    const pageSize = 50;
+    const page = Math.max(0, parseInt(req.query.page, 10) || 0);
+    const skip = page * pageSize;
 
     if (req.query.gameId?.trim()) {
       filters.gameId = req.query.gameId.trim();
@@ -45,8 +48,21 @@ export function createSessionsRouter({ databaseConnector = connectToDatabase } =
       .collection('sessions')
       .find(filters)
       .sort({ sessionDate: -1 })
+      .skip(skip)
+      .limit(pageSize)
       .toArray();
-    return res.json(sessions.map(mapSessionDocument));
+
+    const total = await db.collection('sessions').countDocuments(filters);
+
+    return res.json({
+      sessions: sessions.map(mapSessionDocument),
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    });
   });
 
   router.post('/', async (req, res) => {

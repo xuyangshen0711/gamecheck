@@ -28,8 +28,10 @@ function SessionManager({
   loading,
   refreshing,
   fullWidth,
+  paginationInfo,
   onShowAllPanels,
   onDataChange,
+  onLoadMore,
   setErrorMessage,
 }) {
   const [editingSession, setEditingSession] = useState(null);
@@ -123,6 +125,21 @@ function SessionManager({
         onEdit={setEditingSession}
         onDelete={handleDelete}
       />
+      {paginationInfo && paginationInfo.page < paginationInfo.totalPages - 1 ? (
+        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={onLoadMore}
+            disabled={loading}
+          >
+            Load More Sessions
+          </button>
+          <p style={{ fontSize: '0.9rem', color: '#7b8d9c', marginTop: '0.5rem' }}>
+            Showing {sessions.length} of {paginationInfo.total} sessions
+          </p>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -138,8 +155,15 @@ SessionManager.propTypes = {
   loading: PropTypes.bool.isRequired,
   refreshing: PropTypes.bool.isRequired,
   fullWidth: PropTypes.bool.isRequired,
+  paginationInfo: PropTypes.shape({
+    page: PropTypes.number.isRequired,
+    pageSize: PropTypes.number.isRequired,
+    total: PropTypes.number.isRequired,
+    totalPages: PropTypes.number.isRequired,
+  }),
   onShowAllPanels: PropTypes.func.isRequired,
   onDataChange: PropTypes.func.isRequired,
+  onLoadMore: PropTypes.func.isRequired,
   setErrorMessage: PropTypes.func.isRequired,
 };
 

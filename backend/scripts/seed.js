@@ -29,67 +29,104 @@ const curatedGames = [
     maxPlayers: 5,
     description: 'Build a wildlife preserve and attract birds with unique abilities.',
   },
+  {
+    name: 'Ticket to Ride',
+    category: 'Strategy',
+    minPlayers: 2,
+    maxPlayers: 5,
+    description: 'Claim railway routes and connect cities across the map.',
+  },
+  {
+    name: 'Splendor',
+    category: 'Strategy',
+    minPlayers: 2,
+    maxPlayers: 4,
+    description: 'Become a gem merchant and build your trading empire.',
+  },
 ];
 
-const playerGroupsByGame = {
-  Azul: [
-    ['Alex', 'Jordan'],
-    ['Taylor', 'Morgan', 'Riley'],
-    ['Casey', 'Jamie', 'Avery', 'Parker'],
-  ],
-  Catan: [
-    ['Alex', 'Jordan', 'Taylor'],
-    ['Morgan', 'Riley', 'Casey', 'Jamie'],
-    ['Avery', 'Parker', 'Drew', 'Sam'],
-  ],
-  Codenames: [
-    ['Alex', 'Jordan', 'Taylor', 'Morgan'],
-    ['Riley', 'Casey', 'Jamie', 'Avery', 'Parker', 'Drew'],
-    ['Sam', 'Quinn', 'Alex', 'Jamie', 'Morgan', 'Taylor'],
-  ],
-  Wingspan: [
-    ['Parker'],
-    ['Jordan', 'Riley', 'Taylor'],
-    ['Alex', 'Drew', 'Jamie', 'Avery'],
-  ],
-};
+const playerPool = [
+  'Alex', 'Jordan', 'Taylor', 'Morgan', 'Riley', 'Casey', 'Jamie', 'Avery',
+  'Parker', 'Drew', 'Sam', 'Quinn', 'Blake', 'Cameron', 'Dakota', 'Elliott',
+  'Finley', 'Gray', 'Harper', 'Indigo', 'Jules', 'Kelly', 'Logan', 'Morgan',
+  'Noah', 'Owen', 'Parker', 'Quinn', 'River', 'Sage', 'Taylor', 'Uma',
+  'Vale', 'Wren', 'Xander', 'Yara', 'Zephyr', 'Archer', 'Bailey', 'Casey',
+  'Dakota', 'Emery', 'Falcon', 'Greyson', 'Hunter', 'Indigo', 'Jude', 'Kora',
+  'Lane', 'Morgan', 'Navy', 'Oliver', 'Phoenix', 'Quinn', 'Riley', 'Shadow',
+];
 
 const notesByGame = {
   Azul: [
     'Close finish with strong late-game tile placement.',
     'Fast rematch after a tied round total.',
     'New strategy around center drafting worked well.',
+    'Dominant performance by the tile master.',
+    'Everyone stayed competitive throughout.',
   ],
   Catan: [
     'Longest road swung the final score.',
     'Resource trading stayed friendly until the last round.',
     'A city upgrade sealed the win.',
+    'Lucky dice rolls changed everything.',
+    'First to 10 points with strong settlements.',
   ],
   Codenames: [
     'Team guessed aggressively and finished early.',
     'One risky clue turned the round around.',
     'Great table energy with fast back-and-forth guessing.',
+    'Perfect coordination between teammates.',
+    'Intense final round that came down to the wire.',
   ],
   Wingspan: [
     'Engine building paid off in the final habitat.',
     'Bonus cards decided a tight game.',
     'A strong wetland setup carried the session.',
+    'Beautiful synergy between bird powers.',
+    'Great balance of luck and strategy.',
+  ],
+  'Ticket to Ride': [
+    'Completed a cross-country route successfully.',
+    'Fierce competition for key railway segments.',
+    'Strong point lead achieved early.',
+    'Last-minute route claims changed the outcome.',
+    'Excellent use of locomotive cards.',
+  ],
+  Splendor: [
+    'Gem monopoly strategy worked brilliantly.',
+    'Noble cards provided crucial bonus points.',
+    'Noble points clinched the victory.',
+    'Defensive play slowed down competitors.',
+    'Reserved cards paid off in the end.',
   ],
 };
 
+function getRandomSubset(array, minSize, maxSize) {
+  const size = minSize + Math.floor(Math.random() * (maxSize - minSize + 1));
+  const shuffled = [...array].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, size);
+}
+
 function buildSessions(games) {
-  const baseDate = new Date('2026-03-01T00:00:00.000Z');
+  const baseDate = new Date('2025-01-01T00:00:00.000Z');
   const sessions = [];
 
+  // 为每个游戏生成约170条sessions，共6个游戏 = 1020条
   games.forEach((game, gameIndex) => {
-    const playerGroups = playerGroupsByGame[game.name];
-    const notes = notesByGame[game.name];
+    const notes = notesByGame[game.name] || ['Great session!'];
+    const sessionsPerGame = 170;
 
-    for (let index = 0; index < 8; index += 1) {
-      const players = playerGroups[index % playerGroups.length];
-      const winner = players[(index + gameIndex) % players.length];
+    for (let index = 0; index < sessionsPerGame; index += 1) {
+      // 随机选择玩家（符合游戏的最小/最大玩家数）
+      const minPlayers = Math.max(2, game.minPlayers);
+      const maxPlayers = Math.min(8, game.maxPlayers);
+      const players = getRandomSubset(playerPool, minPlayers, maxPlayers);
+      
+      const winner = players[Math.floor(Math.random() * players.length)];
+      
+      // 分布在过去14个月
       const sessionDate = new Date(baseDate);
-      sessionDate.setUTCDate(baseDate.getUTCDate() + gameIndex * 8 + index);
+      const daysOffset = gameIndex * 170 + index;
+      sessionDate.setUTCDate(baseDate.getUTCDate() + daysOffset);
 
       sessions.push({
         gameId: game._id.toString(),

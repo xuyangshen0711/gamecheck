@@ -61,6 +61,10 @@ export const api = {
       params.set('player', filters.player);
     }
 
+    if (filters.page !== undefined) {
+      params.set('page', filters.page);
+    }
+
     const query = params.toString() ? `?${params.toString()}` : '';
     return request(`/sessions${query}`, options);
   },

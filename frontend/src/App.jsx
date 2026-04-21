@@ -18,6 +18,8 @@ function App() {
   const [stats, setStats] = useState(null);
   const [activePanel, setActivePanel] = useState('both');
   const [focusedStatsPlayer, setFocusedStatsPlayer] = useState('');
+  const [sessionPage, setSessionPage] = useState(0);
+  const [paginationInfo, setPaginationInfo] = useState(null);
   const [sessionFilters, setSessionFilters] = useState({
     gameId: '',
     player: '',
@@ -75,7 +77,7 @@ function App() {
     }
   }, []);
 
-  const loadData = useCallback(async (filters = {}) => {
+  const loadData = useCallback(async (filters = {}, resetPage = true) => {
     activeRequestControllerRef.current?.abort();
     const controller = new AbortController();
     activeRequestControllerRef.current = controller;
@@ -87,6 +89,10 @@ function App() {
       setRefreshing(true);
     }
 
+    if (resetPage) {
+      setSessionPage(0);
+    }
+
     const normalizedFilters = {
       gameId: filters.gameId || '',
       player: filters.player || '',
@@ -95,17 +101,39 @@ function App() {
     try {
       const requests = [
         api.listGames('', { signal: controller.signal }),
-        api.listSessions({}, { signal: controller.signal }),
       ];
 
-      if (hasActiveSessionFilters(normalizedFilters)) {
-        requests.push(api.listSessions(normalizedFilters, { signal: controller.signal }));
+      // Get paginated sessions for display
+      const pageToLoad = resetPage ? 0 : sessionPage;
+      const sessionRequest = api.listSessions({ ...normalizedFilters, page: pageToLoad }, { signal: controller.signal });
+      requests.push(sessionRequest);
+
+      const [gameData, sessionData] = await Promise.all(requests);
+      
+      setGames(gameData);
+      
+      // Handle both old format (array) and new format (object with pagination)
+      let displaySessions = [];
+      let allSessionsData = [];
+      let paginationData = null;
+
+      if (Array.isArray(sessionData)) {
+        // Fallback for old API format
+        displaySessions = sessionData;
+        allSessionsData = sessionData;
+      } else if (sessionData.sessions) {
+        // New paginated format
+        displaySessions = sessionData.sessions;
+        paginationData = sessionData.pagination;
+        
+        // For player suggestions, we need all session data
+        // In page 0, we collect players from first page
+        allSessionsData = sessionData.sessions;
       }
 
-      const [gameData, allSessionData, filteredSessionData] = await Promise.all(requests);
-      setGames(gameData);
-      setAllSessions(allSessionData);
-      setSessions(filteredSessionData || allSessionData);
+      setSessions(displaySessions);
+      setPaginationInfo(paginationData);
+      setAllSessions(allSessionsData);
       setSessionFilters(normalizedFilters);
       setErrorMessage('');
     } catch (error) {
@@ -121,7 +149,7 @@ function App() {
         setRefreshing(false);
       }
     }
-  }, [allSessions.length, games.length, initialLoading]);
+  }, [allSessions.length, games.length, initialLoading, sessionPage]);
 
   useEffect(() => {
     loadData();
@@ -134,7 +162,28 @@ function App() {
   }, [loadData, loadStats]);
 
   async function handleDataChange(filters) {
-    await Promise.all([loadData(filters), loadStats(focusedStatsPlayer)]);
+    await loadData(filters, true);
+    await loadStats(focusedStatsPlayer);
+  }
+
+  async function handleLoadMore() {
+    const nextPage = sessionPage + 1;
+    setSessionPage(nextPage);
+
+    try {
+      const sessionData = await api.listSessions({ ...sessionFilters, page: nextPage });
+
+      if (Array.isArray(sessionData)) {
+        setSessions((prev) => [...prev, ...sessionData]);
+      } else if (sessionData.sessions) {
+        setSessions((prev) => [...prev, ...sessionData.sessions]);
+        setPaginationInfo(sessionData.pagination);
+      }
+
+      setErrorMessage('');
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
   }
 
   async function handleStatsFocusChange(player) {
@@ -203,8 +252,10 @@ function App() {
             loading={initialLoading}
             refreshing={refreshing}
             fullWidth={activePanel === 'sessions'}
+            paginationInfo={paginationInfo}
             onShowAllPanels={() => setActivePanel('both')}
             onDataChange={handleDataChange}
+            onLoadMore={handleLoadMore}
             setErrorMessage={setErrorMessage}
           />
         ) : null}

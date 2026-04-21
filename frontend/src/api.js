@@ -2,12 +2,14 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:4000/api' : '/api');
 
 async function request(path, options = {}) {
+  const { skipUnauthorizedEvent = false, ...requestOptions } = options;
   const response = await fetch(`${API_BASE_URL}${path}`, {
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...(options.headers || {}),
+      ...(requestOptions.headers || {}),
     },
-    ...options,
+    ...requestOptions,
   });
 
   if (response.status === 204) {
@@ -22,13 +24,41 @@ async function request(path, options = {}) {
     const message = isJsonResponse
       ? data.error || data.errors?.join(' ') || `Request failed with status ${response.status}.`
       : data.trim() || `Request failed with status ${response.status}.`;
-    throw new Error(message);
+    const error = new Error(message);
+    error.status = response.status;
+
+    if (response.status === 401 && !skipUnauthorizedEvent && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('gamecheck:unauthorized'));
+    }
+
+    throw error;
   }
 
   return data;
 }
 
 export const api = {
+  getCurrentUser() {
+    return request('/auth/me');
+  },
+  register(payload) {
+    return request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+  login(payload) {
+    return request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      skipUnauthorizedEvent: true,
+    });
+  },
+  logout() {
+    return request('/auth/logout', {
+      method: 'POST',
+    });
+  },
   listGames(search = '', options = {}) {
     const query = search ? `?search=${encodeURIComponent(search)}` : '';
     return request(`/games${query}`, options);

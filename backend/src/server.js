@@ -1,4 +1,5 @@
 import { createApp } from './app.js';
+import { ensureUserIndexes } from './auth/users.js';
 import { env } from './config/env.js';
 import { connectToDatabase } from './db/mongo.js';
 
@@ -6,6 +7,7 @@ const app = createApp();
 
 async function startServer() {
   await connectToDatabase();
+  await ensureUserIndexes();
 
   app.listen(env.port, '0.0.0.0', () => {
     console.log(`GameCheck backend listening on http://localhost:${env.port}`);

@@ -1,10 +1,95 @@
+/* ── Design tokens ─────────────────────────────────────────── */
 :root {
-  color: #17324d;
-  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  /* Colors */
+  --color-primary:       #17324d;
+  --color-primary-hover: #1e4469;
+  --color-accent:        #2b6b63;
+  --color-danger:        #b74b38;
+  --color-secondary:     #8ba5b7;
+
+  /* Surfaces */
+  --color-surface:       #ffffff;
+  --color-surface-alt:   #f5f9fc;
+  --color-border:        #dde8f0;
+
+  /* Text */
+  --color-text:          #17324d;
+  --color-text-muted:    #526070;   /* WCAG AA: 6.4:1 on white */
+  --color-text-label:    #29485f;
+
+  /* Focus ring */
+  --focus-ring:          3px solid #2b6b63;
+  --focus-ring-offset:   2px;
+
+  /* Font */
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Spacing */
+  --space-xs:  0.5rem;
+  --space-sm:  0.75rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2rem;
+
+  /* Radii */
+  --radius-sm:   12px;
+  --radius-md:   18px;
+  --radius-lg:   24px;
+  --radius-full: 999px;
+
+  color: var(--color-text);
+  font-family: var(--font-sans);
   line-height: 1.5;
-  background:
-    radial-gradient(circle at top left, rgba(153, 205, 188, 0.28), transparent 28%),
-    linear-gradient(180deg, #eff6f4, #f7fafc 50%, #edf3f8);
+  background: var(--app-background);
+  --app-background: radial-gradient(circle at top left, rgba(153, 205, 188, 0.28), transparent 28%), linear-gradient(180deg, #eff6f4, #f7fafc 50%, #edf3f8);
+}
+
+:root[data-theme='night'] {
+  --color-primary:       #94b5ff;
+  --color-primary-hover: #7fa6ff;
+  --color-accent:        #6dd5c4;
+  --color-danger:        #f5857a;
+  --color-secondary:     #b2bfdb;
+  --color-surface:       #101827;
+  --color-surface-alt:   #172645;
+  --color-border:        #2c3b57;
+  --color-text:          #eef5ff;
+  --color-text-muted:    #a0b1d4;
+  --color-text-label:    #c7d2eb;
+  --focus-ring:          3px solid #6dd5c4;
+  --app-background: radial-gradient(circle at top left, rgba(56, 78, 131, 0.16), transparent 28%), linear-gradient(180deg, #071029, #1a2944 52%, #111b36);
+}
+
+:root[data-theme='forest'] {
+  --color-primary:       #1e4d3b;
+  --color-primary-hover: #276d54;
+  --color-accent:        #6dbb8d;
+  --color-danger:        #b8503a;
+  --color-secondary:     #7a9b86;
+  --color-surface:       #f5fbf8;
+  --color-surface-alt:   #e6f2eb;
+  --color-border:        #c9ded1;
+  --color-text:          #163b2c;
+  --color-text-muted:    #426b5f;
+  --color-text-label:    #335a4b;
+  --focus-ring:          3px solid #6dbb8d;
+  --app-background: radial-gradient(circle at top left, rgba(41, 96, 79, 0.18), transparent 28%), linear-gradient(180deg, #ecf7ef, #d7efe2 55%, #d0eadb);
+}
+
+:root[data-theme='sunset'] {
+  --color-primary:       #b75a44;
+  --color-primary-hover: #d66f54;
+  --color-accent:        #f2b96d;
+  --color-danger:        #9e2e36;
+  --color-secondary:     #c18d77;
+  --color-surface:       #fff5ee;
+  --color-surface-alt:   #ffe8d8;
+  --color-border:        #e7c5b5;
+  --color-text:          #3b322d;
+  --color-text-muted:    #725d52;
+  --color-text-label:    #6e5449;
+  --focus-ring:          3px solid #f2b96d;
+  --app-background: radial-gradient(circle at top left, rgba(186, 103, 82, 0.18), transparent 28%), linear-gradient(180deg, #fff2ea, #f9e0cc 52%, #f3d2b7);
 }
 
 * {
@@ -16,6 +101,29 @@ body {
   min-width: 320px;
 }
 
+/* ── Focus styles ──────────────────────────────────────────── */
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: 4px;
+}
+
+button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-full);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 0;
+  border-color: var(--color-accent);
+  border-radius: var(--radius-sm);
+}
+
+/* ── Form element defaults ─────────────────────────────────── */
 button,
 input,
 select,
@@ -24,12 +132,18 @@ textarea {
 }
 
 button {
-  background: #17324d;
+  background: var(--color-primary);
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   color: #ffffff;
   cursor: pointer;
-  padding: 0.8rem 1.1rem;
+  font-weight: 600;
+  padding: 0.8rem 1.25rem;
+  transition: background 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
 }
 
 button:disabled {
@@ -40,15 +154,15 @@ button:disabled {
 input,
 select,
 textarea {
-  background: #ffffff;
-  border: 1px solid #c9d7e2;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   margin-top: 0.4rem;
   padding: 0.85rem 0.95rem;
 }
 
 label {
-  color: #29485f;
+  color: var(--color-text-label);
   display: grid;
   font-weight: 600;
   gap: 0.2rem;
@@ -59,15 +173,25 @@ textarea {
   resize: vertical;
 }
 
+/* ── Utility button variants ───────────────────────────────── */
 .button-secondary {
-  background: #8ba5b7;
+  background: var(--color-secondary);
+}
+
+.button-secondary:hover:not(:disabled) {
+  background: #7a95a8;
 }
 
 .button-danger {
-  background: #b74b38;
+  background: var(--color-danger);
 }
 
+.button-danger:hover:not(:disabled) {
+  background: #9e3f2f;
+}
+
+/* ── Shared list state ─────────────────────────────────────── */
 .list-state {
-  color: #5a7082;
+  color: var(--color-text-muted);
   margin: 0;
 }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api.js';
+import AuthPanel from './components/Auth/AuthPanel.jsx';
 import Dashboard from './components/Dashboard/Dashboard.jsx';
 import Header from './components/Layout/Header.jsx';
 import GameLibrary from './components/GameLibrary/GameLibrary.jsx';
@@ -7,29 +8,44 @@ import SessionManager from './components/SessionManager/SessionManager.jsx';
 import StatisticsPage from './components/Statistics/StatisticsPage.jsx';
 import './styles/App.css';
 
+const emptySessionFilters = {
+  gameId: '',
+  player: '',
+};
+
 function hasActiveSessionFilters(filters) {
   return Boolean(filters.gameId || filters.player.trim());
 }
+
+const themeOptions = [
+  { value: 'day', label: 'Day mode' },
+  { value: 'night', label: 'Night mode' },
+  { value: 'forest', label: 'Forest theme' },
+  { value: 'sunset', label: 'Sunset theme' },
+];
 
 function App() {
   const [games, setGames] = useState([]);
   const [allSessions, setAllSessions] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [stats, setStats] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [activePanel, setActivePanel] = useState('both');
   const [focusedStatsPlayer, setFocusedStatsPlayer] = useState('');
-  const [sessionPage, setSessionPage] = useState(0);
-  const [paginationInfo, setPaginationInfo] = useState(null);
   const [sessionFilters, setSessionFilters] = useState({
     gameId: '',
     player: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authSubmitting, setAuthSubmitting] = useState(false);
+  const [logoutPending, setLogoutPending] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const activeRequestControllerRef = useRef(null);
   const activeStatsRequestControllerRef = useRef(null);
+  const hasLoadedDataRef = useRef(false);
   const isEmptyDeployment =
     !initialLoading && !errorMessage && games.length === 0 && allSessions.length === 0;
   const playerSuggestions = useMemo(() => {
@@ -52,6 +68,35 @@ function App() {
       .map(([player]) => player);
   }, [allSessions]);
 
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('gamecheck-theme', theme);
+  }, [theme]);
+
+  const resetWorkspaceState = useCallback(() => {
+    activeRequestControllerRef.current?.abort();
+    activeStatsRequestControllerRef.current?.abort();
+    activeRequestControllerRef.current = null;
+    activeStatsRequestControllerRef.current = null;
+    hasLoadedDataRef.current = false;
+    setGames([]);
+    setAllSessions([]);
+    setSessions([]);
+    setStats(null);
+    setActivePanel('both');
+    setFocusedStatsPlayer('');
+    setSessionFilters(emptySessionFilters);
+    setInitialLoading(false);
+    setStatsLoading(false);
+    setRefreshing(false);
+  }, []);
+
+  const clearAuthenticationState = useCallback((message = '') => {
+    setCurrentUser(null);
+    resetWorkspaceState();
+    setErrorMessage(message);
+  }, [resetWorkspaceState]);
+
   const loadStats = useCallback(async (player = '') => {
     activeStatsRequestControllerRef.current?.abort();
     const controller = new AbortController();
@@ -68,6 +113,11 @@ function App() {
         return;
       }
 
+      if (error.status === 401) {
+        clearAuthenticationState('Your session expired. Please sign in again.');
+        return;
+      }
+
       setErrorMessage(error.message);
     } finally {
       if (activeStatsRequestControllerRef.current === controller) {
@@ -75,15 +125,14 @@ function App() {
         setStatsLoading(false);
       }
     }
-  }, []);
+  }, [clearAuthenticationState]);
 
   const loadData = useCallback(async (filters = {}, resetPage = true) => {
     activeRequestControllerRef.current?.abort();
     const controller = new AbortController();
     activeRequestControllerRef.current = controller;
-    const isFirstLoad = initialLoading && games.length === 0 && allSessions.length === 0;
 
-    if (isFirstLoad) {
+    if (!hasLoadedDataRef.current) {
       setInitialLoading(true);
     } else {
       setRefreshing(true);
@@ -141,25 +190,60 @@ function App() {
         return;
       }
 
+      if (error.status === 401) {
+        clearAuthenticationState('Your session expired. Please sign in again.');
+        return;
+      }
+
       setErrorMessage(error.message);
     } finally {
       if (activeRequestControllerRef.current === controller) {
         activeRequestControllerRef.current = null;
         setInitialLoading(false);
         setRefreshing(false);
+        hasLoadedDataRef.current = true;
       }
     }
-  }, [allSessions.length, games.length, initialLoading, sessionPage]);
+  }, [allSessions.length, games.length, initialLoading]);
 
   useEffect(() => {
-    loadData();
-    loadStats();
+    async function initializeSession() {
+      setAuthLoading(true);
+
+      try {
+        const sessionPayload = await api.getCurrentUser();
+        const nextUser = sessionPayload.user;
+
+        setCurrentUser(nextUser);
+        setErrorMessage('');
+
+        if (nextUser) {
+          await Promise.all([loadData(), loadStats()]);
+        } else {
+          resetWorkspaceState();
+        }
+      } catch (error) {
+        setErrorMessage(error.message);
+        resetWorkspaceState();
+      } finally {
+        setAuthLoading(false);
+      }
+    }
+
+    function handleUnauthorized() {
+      setAuthLoading(false);
+      clearAuthenticationState('Your session expired. Please sign in again.');
+    }
+
+    initializeSession();
+    window.addEventListener('gamecheck:unauthorized', handleUnauthorized);
 
     return () => {
       activeRequestControllerRef.current?.abort();
       activeStatsRequestControllerRef.current?.abort();
+      window.removeEventListener('gamecheck:unauthorized', handleUnauthorized);
     };
-  }, [loadData, loadStats]);
+  }, [clearAuthenticationState, loadData, loadStats, resetWorkspaceState]);
 
   async function handleDataChange(filters) {
     await loadData(filters, true);
@@ -189,6 +273,46 @@ function App() {
   async function handleStatsFocusChange(player) {
     setFocusedStatsPlayer(player);
     await loadStats(player);
+  }
+
+  async function handleAuthenticate(credentials, mode) {
+    setAuthSubmitting(true);
+
+    try {
+      const payload =
+        mode === 'register'
+          ? await api.register(credentials)
+          : await api.login(credentials);
+
+      setCurrentUser(payload.user);
+      setErrorMessage('');
+      setInitialLoading(true);
+      setStatsLoading(true);
+      hasLoadedDataRef.current = false;
+      await Promise.all([loadData(), loadStats()]);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setAuthSubmitting(false);
+      setAuthLoading(false);
+    }
+  }
+
+  async function handleLogout() {
+    setLogoutPending(true);
+
+    try {
+      await api.logout();
+      clearAuthenticationState('');
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setLogoutPending(false);
+    }
+  }
+
+  function handleThemeChange(event) {
+    setTheme(event.target.value);
   }
 
   return (
@@ -252,10 +376,8 @@ function App() {
             loading={initialLoading}
             refreshing={refreshing}
             fullWidth={activePanel === 'sessions'}
-            paginationInfo={paginationInfo}
             onShowAllPanels={() => setActivePanel('both')}
             onDataChange={handleDataChange}
-            onLoadMore={handleLoadMore}
             setErrorMessage={setErrorMessage}
           />
         ) : null}

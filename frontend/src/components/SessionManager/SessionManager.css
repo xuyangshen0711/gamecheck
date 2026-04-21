@@ -9,6 +9,46 @@
   gap: 0.75rem;
 }
 
+.panel__form-section {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.75rem;
+}
+
+.panel__toggle {
+  align-items: center;
+  background: var(--color-accent);
+  display: inline-flex;
+  gap: 0.55rem;
+  justify-self: start;
+}
+
+.panel__toggle:hover:not(:disabled) {
+  background: #245b55;
+}
+
+.panel__toggle-icon {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.panel__form-wrapper {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: max-height 0.3s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.panel__form-wrapper--expanded {
+  max-height: 1120px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
 .panel--full-width {
   max-width: 100%;
 }

@@ -7,10 +7,15 @@
 }
 
 .app-shell__content {
+  animation: fadeIn 0.25s ease-out;
   align-items: start;
   display: grid;
   gap: 1.5rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.app-shell__auth {
+  display: block;
 }
 
 .app-shell__content--single {
@@ -62,6 +67,18 @@
   background: rgba(36, 70, 42, 0.08);
   border-radius: 8px;
   padding: 0.1rem 0.35rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 1080px) {

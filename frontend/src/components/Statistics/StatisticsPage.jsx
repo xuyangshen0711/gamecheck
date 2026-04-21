@@ -10,6 +10,10 @@ function formatRivalryScore(rivalry) {
   return `${rivalry.wins[leftPlayer]} - ${rivalry.wins[rightPlayer]}`;
 }
 
+function calculateChartHeight(value, max) {
+  return max > 0 ? `${Math.max(10, Math.round((value / max) * 100))}%` : '0%';
+}
+
 function MetricCard({ label, value, detail }) {
   return (
     <article className="statistics-page__metric">
@@ -58,6 +62,13 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
   const longestStreaks =
     stats?.streaks.longest.filter((entry) => entry.streak > 0).slice(0, 5) || [];
   const headToHead = stats?.headToHead.slice(0, 6) || [];
+  const headToHeadChart = headToHead.slice(0, 5);
+  const headToHeadMaxWins = headToHeadChart.reduce(
+    (maxWins, rivalry) => Math.max(maxWins, rivalry.wins[rivalry.players[0]], rivalry.wins[rivalry.players[1]]),
+    1
+  );
+  const winRateChart = winRates.slice(0, 5);
+  const maxWinRate = winRateChart.reduce((maxRate, entry) => Math.max(maxRate, entry.winRate), 1);
 
   return (
     <section className="statistics-page">
@@ -197,6 +208,82 @@ function StatisticsPage({ stats, loading, focusedPlayer, playerSuggestions, onFo
           renderMeta={(item) => `${item.startDate} to ${item.endDate}`}
         />
       </div>
+
+      <section className="statistics-page__panel statistics-page__chart-panel">
+        <div className="statistics-page__section-heading">
+          <div>
+            <h3>Head-to-Head Histogram</h3>
+            <p>Visualize rivalry wins as grouped histogram bars.</p>
+          </div>
+        </div>
+        {headToHeadChart.length === 0 ? (
+          <p className="list-state">No matchup data available for charting.</p>
+        ) : (
+          <div className="statistics-page__histogram-grid">
+            {headToHeadChart.map((rivalry) => {
+              const [leftPlayer, rightPlayer] = rivalry.players;
+              const leftWins = rivalry.wins[leftPlayer];
+              const rightWins = rivalry.wins[rightPlayer];
+
+              return (
+                <article className="statistics-page__histogram-item" key={rivalry.players.join('::')}>
+                  <div className="statistics-page__histogram-header">
+                    <strong>{rivalry.players.join(' vs ')}</strong>
+                    <span>{rivalry.meetings} meetings</span>
+                  </div>
+                  <div className="statistics-page__histogram-bars">
+                    <div className="statistics-page__histogram-bar statistics-page__histogram-bar--left" style={{ height: calculateChartHeight(leftWins, headToHeadMaxWins) }}>
+                      <span>{leftWins}</span>
+                    </div>
+                    <div className="statistics-page__histogram-bar statistics-page__histogram-bar--right" style={{ height: calculateChartHeight(rightWins, headToHeadMaxWins) }}>
+                      <span>{rightWins}</span>
+                    </div>
+                  </div>
+                  <div className="statistics-page__histogram-labels">
+                    <span>{leftPlayer}</span>
+                    <span>{rightPlayer}</span>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="statistics-page__panel statistics-page__chart-panel">
+        <div className="statistics-page__section-heading">
+          <div>
+            <h3>Win Rate Histogram</h3>
+            <p>Compare the top players using vertical win rate bars.</p>
+          </div>
+        </div>
+        {winRateChart.length === 0 ? (
+          <p className="list-state">No win rate data available for charting.</p>
+        ) : (
+          <div className="statistics-page__histogram-grid statistics-page__histogram-grid--wide">
+            {winRateChart.map((entry) => (
+              <article className="statistics-page__histogram-item" key={entry.player}>
+                <div className="statistics-page__histogram-header">
+                  <strong>{entry.player}</strong>
+                  <span>{formatPercentage(entry.winRate)}</span>
+                </div>
+                <div className="statistics-page__histogram-bars statistics-page__histogram-bars--single">
+                  <div
+                    className="statistics-page__histogram-bar statistics-page__histogram-bar--single"
+                    style={{ height: calculateChartHeight(entry.winRate, maxWinRate) }}
+                  >
+                    <span>{formatPercentage(entry.winRate)}</span>
+                  </div>
+                </div>
+                <div className="statistics-page__histogram-labels statistics-page__histogram-labels--single">
+                  <span>{entry.wins} wins</span>
+                  <span>{entry.appearances} appearances</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
 
       <section className="statistics-page__panel">
         <div className="statistics-page__section-heading">

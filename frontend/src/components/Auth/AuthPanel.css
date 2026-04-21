@@ -1,0 +1,96 @@
+.auth-panel {
+  display: grid;
+  justify-items: center;
+}
+
+.auth-panel__eyebrow {
+  color: #5f7890;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  margin: 0;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.auth-panel__card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #d8e4ed;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(23, 50, 77, 0.08);
+  display: grid;
+  gap: 1rem;
+  max-width: 420px;
+  padding: 2rem;
+  width: 100%;
+}
+
+.auth-panel__logo {
+  display: block;
+  height: 56px;
+  justify-self: center;
+  object-fit: contain;
+  width: auto;
+}
+
+.auth-panel__card h2,
+.auth-panel__subtitle {
+  margin: 0;
+  text-align: center;
+}
+
+.auth-panel__subtitle {
+  color: #526070;
+}
+
+.auth-panel__form {
+  display: grid;
+  gap: 1rem;
+}
+
+.auth-panel__form label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.auth-panel__form span {
+  color: #24425d;
+  font-weight: 700;
+}
+
+.auth-panel__error {
+  background: #fff4f1;
+  border: 1px solid #f5b4a5;
+  border-radius: 14px;
+  color: #8a2c18;
+  margin: 0;
+  padding: 0.9rem 1rem;
+}
+
+.auth-panel__divider {
+  background: linear-gradient(90deg, transparent, #d8e4ed, transparent);
+  height: 1px;
+  width: 100%;
+}
+
+.auth-panel__switch-text {
+  color: #526070;
+  margin: 0;
+  text-align: center;
+}
+
+.auth-panel__switch-button {
+  background: transparent;
+  border: 1px solid #d8e4ed;
+  color: #17324d;
+}
+
+.auth-panel__switch-button:hover:not(:disabled) {
+  background: #eff5f9;
+}
+
+@media (max-width: 560px) {
+  .auth-panel__card {
+    padding: 1.5rem;
+  }
+}

@@ -4,7 +4,16 @@ import './GameForm.css';
 
 const CUSTOM_GAME_VALUE = '__custom__';
 const ALL_GAMES_VALUE = '';
-const CURATED_GAME_NAMES = ['Azul', 'Catan', 'Codenames', 'Wingspan'];
+const CURATED_GAME_NAMES = [
+  'Azul',
+  'Catan',
+  'Codenames',
+  'Wingspan',
+  'Ticket to Ride',
+  'Pandemic',
+  'Splendor',
+  'Carcassonne',
+];
 
 function GameForm({ games, initialValues, onSubmit, onCancel, isEditing, submitting }) {
   const [formValues, setFormValues] = useState(initialValues);

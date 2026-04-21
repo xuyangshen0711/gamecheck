@@ -12,7 +12,7 @@
 .statistics-page__hero {
   background:
     radial-gradient(circle at top right, rgba(255, 255, 255, 0.2), transparent 24rem),
-    linear-gradient(135deg, #17324d, #2b6b63);
+    linear-gradient(135deg, var(--color-primary), var(--color-accent));
   border-radius: 24px;
   color: #f6fbff;
   display: grid;
@@ -83,6 +83,129 @@
 .statistics-page__matchup-card p {
   color: #5d7489;
   margin: 0;
+}
+
+.statistics-page__chart-panel {
+  padding: 1.25rem;
+}
+
+.statistics-page__chart-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.statistics-page__chart-item {
+  display: grid;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(209, 224, 234, 0.95);
+  border-radius: 20px;
+  padding: 1rem;
+}
+
+.statistics-page__chart-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.statistics-page__histogram-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.statistics-page__histogram-grid--wide {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.statistics-page__histogram-item {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(209, 224, 234, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 18px 30px rgba(23, 50, 77, 0.08);
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.statistics-page__histogram-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.statistics-page__histogram-bars {
+  align-items: flex-end;
+  display: flex;
+  gap: 0.6rem;
+  min-height: 160px;
+  padding-bottom: 0.5rem;
+  position: relative;
+}
+
+.statistics-page__histogram-bars::before {
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.05) 50%, transparent 100%);
+  bottom: 0;
+  content: '';
+  height: 1px;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.statistics-page__histogram-bar {
+  align-items: flex-end;
+  border-radius: 16px 16px 0 0;
+  color: #ffffff;
+  display: flex;
+  font-weight: 700;
+  justify-content: center;
+  padding: 0.45rem 0.35rem 0.5rem;
+  position: relative;
+  transition: opacity 0.2s ease;
+  width: 100%;
+}
+
+.statistics-page__histogram-bar span {
+  font-size: 0.85rem;
+  line-height: 1.1;
+}
+
+.statistics-page__histogram-bar--left {
+  background: linear-gradient(180deg, var(--color-primary-hover), var(--color-primary));
+}
+
+.statistics-page__histogram-bar--right {
+  background: linear-gradient(180deg, var(--color-accent), #2a8f7d);
+}
+
+.statistics-page__histogram-bar--single {
+  background: linear-gradient(180deg, var(--color-primary-hover), var(--color-primary));
+}
+
+.statistics-page__histogram-labels {
+  color: var(--color-text-muted);
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+}
+
+.statistics-page__histogram-labels--single {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.statistics-page__chart-meta {
+  color: var(--color-text-muted);
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+  flex-wrap: wrap;
 }
 
 .statistics-page__insights {

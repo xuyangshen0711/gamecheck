@@ -36,6 +36,7 @@ function SessionManager({
 }) {
   const [editingSession, setEditingSession] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [isFormExpanded, setIsFormExpanded] = useState(false);
 
   const sessionFormValues = useMemo(() => {
     if (!editingSession) {
@@ -70,6 +71,7 @@ function SessionManager({
       }
 
       setEditingSession(null);
+      setIsFormExpanded(false);
       setErrorMessage('');
       await onDataChange(filters);
     } catch (error) {
@@ -87,6 +89,16 @@ function SessionManager({
     } catch (error) {
       setErrorMessage(error.message);
     }
+  }
+
+  function handleEdit(session) {
+    setEditingSession(session);
+    setIsFormExpanded(true);
+  }
+
+  function handleCancelEdit() {
+    setEditingSession(null);
+    setIsFormExpanded(false);
   }
 
   async function handleFilterChange(nextFilters) {
@@ -110,19 +122,45 @@ function SessionManager({
         </div>
       </div>
       <SessionFilter games={games} filters={filters} onChange={handleFilterChange} />
-      <SessionForm
-        games={games}
-        initialValues={sessionFormValues}
-        playerSuggestions={playerSuggestions}
-        onSubmit={handleSubmit}
-        onCancel={() => setEditingSession(null)}
-        isEditing={Boolean(editingSession)}
-        submitting={submitting}
-      />
+      <div className="panel__form-section">
+        <button
+          type="button"
+          className="panel__toggle"
+          aria-expanded={isFormExpanded}
+          aria-controls="session-form-region"
+          onClick={() => {
+            if (isFormExpanded && editingSession) {
+              setEditingSession(null);
+            }
+
+            setIsFormExpanded((currentValue) => !currentValue);
+          }}
+        >
+          <span className="panel__toggle-icon" aria-hidden="true">
+            {isFormExpanded ? '-' : '+'}
+          </span>
+          {isFormExpanded ? 'Hide Session Form' : 'Log New Session'}
+        </button>
+        <div
+          id="session-form-region"
+          className={isFormExpanded ? 'panel__form-wrapper panel__form-wrapper--expanded' : 'panel__form-wrapper'}
+        >
+          <SessionForm
+            games={games}
+            initialValues={sessionFormValues}
+            playerSuggestions={playerSuggestions}
+            onSubmit={handleSubmit}
+            onCancel={handleCancelEdit}
+            isEditing={Boolean(editingSession)}
+            submitting={submitting}
+          />
+        </div>
+      </div>
       <SessionList
         sessions={sessions}
         loading={loading}
-        onEdit={setEditingSession}
+        hasActiveFilters={Boolean(filters.gameId || filters.player.trim())}
+        onEdit={handleEdit}
         onDelete={handleDelete}
       />
       {paginationInfo && paginationInfo.page < paginationInfo.totalPages - 1 ? (

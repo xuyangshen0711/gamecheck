@@ -251,16 +251,19 @@ function buildHeadToHead(sessions, focusPlayer = '') {
 
 export function buildStatisticsPayload({ gamesCount, sessions, focusPlayer = '' }) {
   const normalizedSessions = [...sessions].sort(compareBySessionDateDescending);
-  const uniquePlayers = new Set(normalizedSessions.flatMap((session) => session.players));
-  const winRates = buildWinRates(normalizedSessions);
-  const mostPlayedGames = buildMostPlayedGames(normalizedSessions);
-  const streaks = buildPlayerStreaks(normalizedSessions);
-  const headToHead = buildHeadToHead(normalizedSessions, focusPlayer);
+  const filteredSessions = focusPlayer
+    ? normalizedSessions.filter((session) => session.players.includes(focusPlayer))
+    : normalizedSessions;
+  const uniquePlayers = new Set(filteredSessions.flatMap((session) => session.players));
+  const winRates = buildWinRates(filteredSessions);
+  const mostPlayedGames = buildMostPlayedGames(filteredSessions);
+  const streaks = buildPlayerStreaks(filteredSessions);
+  const headToHead = buildHeadToHead(filteredSessions, focusPlayer);
   const dashboard = {
     gamesTracked: gamesCount,
-    sessionsLogged: normalizedSessions.length,
+    sessionsLogged: filteredSessions.length,
     playersTracked: uniquePlayers.size,
-    latestWinner: normalizedSessions[0]?.winner || null,
+    latestWinner: filteredSessions[0]?.winner || null,
     mostPlayedGame: getTopEntry(mostPlayedGames, (entry) => entry.sessionsPlayed),
     bestWinRate: getTopEntry(winRates, (entry) => entry.winRate),
     hottestStreak: getTopEntry(
@@ -285,9 +288,10 @@ export function createStatsRouter({ databaseConnector = connectToDatabase } = {}
   router.get('/', async (req, res) => {
     const db = await databaseConnector();
     const focusPlayer = req.query.player?.trim() || '';
+    const sessionFilter = focusPlayer ? { players: focusPlayer } : {};
     const [gamesCount, sessions] = await Promise.all([
       db.collection('games').countDocuments(),
-      db.collection('sessions').find({}).sort({ sessionDate: -1 }).toArray(),
+      db.collection('sessions').find(sessionFilter).sort({ sessionDate: -1 }).toArray(),
     ]);
 
     return res.json(buildStatisticsPayload({ gamesCount, sessions, focusPlayer }));

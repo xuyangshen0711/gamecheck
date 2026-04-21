@@ -44,6 +44,34 @@ const fallbackGames = [
     maxPlayers: 8,
     description: 'Sample game for local statistics testing.',
   },
+  {
+    name: 'Ticket to Ride',
+    category: 'Family',
+    minPlayers: 2,
+    maxPlayers: 5,
+    description: 'Sample game for local statistics testing.',
+  },
+  {
+    name: 'Pandemic',
+    category: 'Cooperative',
+    minPlayers: 2,
+    maxPlayers: 4,
+    description: 'Sample game for local statistics testing.',
+  },
+  {
+    name: 'Splendor',
+    category: 'Engine Building',
+    minPlayers: 2,
+    maxPlayers: 4,
+    description: 'Sample game for local statistics testing.',
+  },
+  {
+    name: 'Carcassonne',
+    category: 'Tile Placement',
+    minPlayers: 2,
+    maxPlayers: 5,
+    description: 'Sample game for local statistics testing.',
+  },
 ];
 
 function randomInt(max) {

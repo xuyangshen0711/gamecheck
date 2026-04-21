@@ -9,9 +9,14 @@
 
 - CS5610 Project 3
 
+## Live Demo
+
+- [https://gamecheck-ro7u.onrender.com](https://gamecheck-ro7u.onrender.com)
+
 ## Project Objective
 
 GameCheck is a full-stack web application for tracking a personal board game library, recording game night sessions, and reviewing player statistics. The project follows the required CS5610 Project 3 stack: Node.js, Express, client-side rendered React with Hooks, and MongoDB using the official Node.js driver.
+It now also implements authentication using Passport with a local username/password strategy and server-side sessions.
 
 ## Team Scope And Independent User Stories
 
@@ -33,8 +38,8 @@ GameCheck is a full-stack web application for tracking a personal board game lib
 
 1. Copy `backend/.env.example` to `backend/.env`.
 2. Install dependencies in `backend/`.
-3. Start MongoDB locally or provide a MongoDB connection string in `.env` as `MONGO_URI`.
-4. Run `npm run seed` to generate 1000+ synthetic records across 6 curated board games with 50+ unique player names.
+3. Start MongoDB locally or provide a MongoDB connection string.
+4. Run `npm run seed` to generate synthetic data.
 5. Run `npm run dev` or `npm start`.
 
 ### Frontend
@@ -70,6 +75,20 @@ MONGO_URI="your-atlas-connection-string" npm run render-seed
 
 7. Open the Render service URL and verify that the dashboard, game library, and session logging features work.
 
+## Screenshots
+
+### Authentication
+
+Passport-based sign-in and registration protect the workspace before any game or session data is shown.
+
+![GameCheck authentication screenshot](docs/screenshots/auth-sign-in.png)
+
+### Workspace Overview
+
+The main workspace combines the dashboard, game library, and session logging tools in a single view.
+
+![GameCheck workspace overview screenshot](docs/screenshots/workspace-overview.png)
+
 ## Feature Scope
 
 - Create, edit, delete, search, and browse games in the library.
@@ -77,8 +96,6 @@ MONGO_URI="your-atlas-connection-string" npm run render-seed
 - Filter sessions by game and player with smart pagination reset.
 - View a lightweight dashboard summary for games, sessions, players, and the latest winner.
 - View player statistics such as win rates, streaks, rivalry matchups, and most-played games.
-- **Load More** button to fetch additional session pages without page reload.
-- Dynamic player suggestions based on session history across 50+ unique names.
 
 ## Project Structure
 

@@ -1,7 +1,7 @@
 import { pathToFileURL } from 'url';
 import { connectToDatabase, closeDatabase } from '../src/db/mongo.js';
 
-export const SESSIONS_PER_GAME = 50;
+export const SESSIONS_PER_GAME = 260;
 
 export const curatedGames = [
   {
@@ -153,16 +153,15 @@ function selectWinner(players, gameName, seed) {
   return players[players.length - 1];
 }
 
-function buildSessions(games) {
+export function buildSessions(games) {
   const baseDate = new Date('2024-01-01T00:00:00.000Z');
   const sessions = [];
-  const sessionsPerGame = 260;
 
   games.forEach((game, gameIndex) => {
     const playerGroups = playerGroupsByGame[game.name];
     const notes = notesByGame[game.name];
 
-    for (let index = 0; index < sessionsPerGame; index += 1) {
+    for (let index = 0; index < SESSIONS_PER_GAME; index += 1) {
       const players = playerGroups[index % playerGroups.length];
       const winner = selectWinner(players, game.name, index * 4 + gameIndex);
       const sessionDate = new Date(baseDate);

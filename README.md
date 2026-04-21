@@ -51,8 +51,9 @@ It now also implements authentication using Passport with a local username/passw
 ## Features: Data & Pagination
 
 The database is pre-populated with **1000+ synthetic session records** distributed across multiple games:
-- **6 board games**: Azul, Catan, Codenames, Wingspan, Ticket to Ride, Splendor
-- **50+ unique player names** for realistic game session data
+- **4 board games**: Azul, Catan, Codenames, Wingspan
+- **12 recurring player profiles** with varied group combinations and weighted winners for realistic session patterns
+- **260 sessions per game** for a total of **1040 seeded sessions**
 - **Session pagination**: The frontend displays 50 sessions per page with a "Load More" button to fetch additional pages
 - **Dynamic player suggestions**: Based on actual session participation
 

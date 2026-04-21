@@ -49,11 +49,11 @@
 }
 
 .statistics-page__eyebrow {
+  color: rgba(246, 251, 255, 0.88);
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   margin: 0;
-  opacity: 0.78;
   text-transform: uppercase;
 }
 
@@ -137,8 +137,8 @@
 }
 
 .statistics-page__histogram-item {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(209, 224, 234, 0.95);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 20px;
   box-shadow: 0 18px 30px rgba(23, 50, 77, 0.08);
   display: grid;
@@ -319,6 +319,12 @@
   color: var(--color-accent);
   font-size: 0.9rem;
   font-weight: 700;
+}
+
+:root[data-theme='night'] .statistics-page__hero {
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.08), transparent 24rem),
+    linear-gradient(135deg, #172645, #1e4a40);
 }
 
 @media (max-width: 1100px) {

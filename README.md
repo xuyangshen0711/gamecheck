@@ -89,6 +89,22 @@ The main workspace combines the dashboard, game library, and session logging too
 
 ![GameCheck workspace overview screenshot](docs/screenshots/workspace-overview.png)
 
+## Accessibility
+
+The application was audited with **Chrome Lighthouse** and achieves a perfect **100 / 100 Accessibility score** in Day mode.
+
+![Lighthouse accessibility score 100](docs/screenshots/lighthouse-accessibility-100.png)
+
+Key improvements made to reach this score:
+
+| Issue | Fix |
+|---|---|
+| `button-secondary` (Sign Out, Cancel, etc.) had white text on a medium-gray background — contrast ratio ~2.4:1 | Changed text color to `var(--color-text)` (dark) so the ratio meets WCAG AA (≥ 4.5:1) across all four themes |
+| `.panel__eyebrow` label text used `opacity: 0.88` which diluted the contrast below 4.5:1 at its small font size (0.72 rem) | Removed the opacity and kept the full token color `--color-text-muted` |
+| Header and Statistics hero eyebrow labels used `opacity: 0.8 / 0.78` instead of an explicit color | Replaced with explicit WCAG-safe color values |
+| Night-mode hero section used `--color-primary` (light periwinkle) as a gradient background behind near-white text | Added a night-mode override with a dark navy-to-teal gradient |
+| Histogram chart cards used a hardcoded white background (`rgba(255,255,255,0.95)`), causing light theme-variable text to appear on white in night mode | Replaced with `var(--color-surface)` so the background adapts to the active theme |
+
 ## Feature Scope
 
 - Create, edit, delete, search, and browse games in the library.

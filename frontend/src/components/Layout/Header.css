@@ -28,9 +28,9 @@
 }
 
 .header__eyebrow {
+  color: #c8daf0;
   letter-spacing: 0.16em;
   margin: 0;
-  opacity: 0.8;
   text-transform: uppercase;
 }
 

@@ -65,7 +65,7 @@
   --color-primary-hover: #276d54;
   --color-accent:        #6dbb8d;
   --color-danger:        #b8503a;
-  --color-secondary:     #7a9b86;
+  --color-secondary:     #90b09e;
   --color-surface:       #f5fbf8;
   --color-surface-alt:   #e6f2eb;
   --color-border:        #c9ded1;
@@ -81,7 +81,7 @@
   --color-primary-hover: #d66f54;
   --color-accent:        #f2b96d;
   --color-danger:        #9e2e36;
-  --color-secondary:     #c18d77;
+  --color-secondary:     #ca9882;
   --color-surface:       #fff5ee;
   --color-surface-alt:   #ffe8d8;
   --color-border:        #e7c5b5;
@@ -177,10 +177,21 @@ textarea {
 /* ── Utility button variants ───────────────────────────────── */
 .button-secondary {
   background: var(--color-secondary);
+  color: var(--color-text);
 }
 
 .button-secondary:hover:not(:disabled) {
   background: #7a95a8;
+  color: var(--color-text);
+}
+
+:root[data-theme='night'] .button-secondary {
+  color: #0d1829;
+}
+
+:root[data-theme='night'] .button-secondary:hover:not(:disabled) {
+  background: #8fa0be;
+  color: #0d1829;
 }
 
 .button-danger {

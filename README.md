@@ -128,3 +128,6 @@ Key improvements made to reach this score:
 
 - AI tools were used for limited development support such as debugging, wording cleanup, and small UI/code refinements.
 - The application structure, implementation decisions, and final review were completed by the project team.
+  
+## Video Link
+- https://www.youtube.com/watch?v=whsSSuhQVbY 
